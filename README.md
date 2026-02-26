@@ -1,26 +1,32 @@
 # Frontend
 
-👉 React + TypeScript + Vite
+- React + TypeScript + Vite
+
+```cmd
+npm run dev
+```
 
 # Backend 
 
-👉 Node.js + Express + TypeScript
+- Node.js + Express + TypeScript
 
 
-# 🗄 Base de données
+# Base de données
 
-👉 PostgreSQL
+- PostgreSQL
 
-# 🔌 ORM (pour simplifier la BDD)
+# ORM (pour simplifier la BDD)
 
-👉 Prisma
+- Prisma
 
 ```cmd
-PS Twipper\server> npx prisma migrate dev --name init
+npx prisma migrate dev --name init
 ```
 
-# 🎯 Architecture  
+# Architecture  
 
+```cmd
 twipper/
  ├── client/  → React + TypeScript
  └── server/  → Node.js + Express + Prisma
+```
