@@ -1,0 +1,72 @@
+// Prisma Schema - Twipper
+// Relations : User ↔ Tweet ↔ Like + Follow
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  bio       String?
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  tweets    Tweet[]
+  likes     Like[]
+  followers Follow[] @relation("following") // users who follow this user
+  following Follow[] @relation("follower")  // users this user follows
+
+  @@map("users")
+}
+
+model Tweet {
+  id        String   @id @default(uuid())
+  content   String   @db.VarChar(280)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  authorId  String
+  author    User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes     Like[]
+
+  @@map("tweets")
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId    String
+  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tweetId   String
+  tweet     Tweet  @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, tweetId]) // un user ne peut liker qu'une fois un tweet
+  @@map("likes")
+}
+
+model Follow {
+  id         String   @id @default(uuid())
+  createdAt  DateTime @default(now())
+
+  // Relations
+  followerId String
+  follower   User   @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User   @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId]) // on ne peut follow qu'une seule fois
+  @@map("follows")
+}
