@@ -1,0 +1,31 @@
+.page404 {
+  text-align: center;
+  margin-top: 5rem;
+}
+
+.page404 h1 {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #2b6cb0;
+}
+
+.page404 p {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  color: #718096;
+}
+
+.page404 button {
+  margin-top: 1.5rem;
+  background-color: #2b6cb0;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.page404 button:hover {
+  background-color: #2c5282;
+}

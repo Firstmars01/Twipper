@@ -1,31 +1,25 @@
-import { Box, Heading, Text, Input, Button, VStack } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import "./Login.css";
 
 function Login() {
   return (
-    <Box maxW="400px" mx="auto" mt={16}>
-      <VStack gap={4} align="stretch">
-        <Heading size="xl" textAlign="center">
-          Connexion
-        </Heading>
+    <div className="login">
+      <div className="login-form">
+        <h1>Connexion</h1>
 
-        <Input placeholder="Email" type="email" />
-        <Input placeholder="Mot de passe" type="password" />
+        <input placeholder="Email" type="email" />
+        <input placeholder="Mot de passe" type="password" />
 
-        <Button bg="blue.600" color="white" _hover={{ bg: "blue.500" }}>
-          Se connecter
-        </Button>
+        <button>Se connecter</button>
 
-        <Text textAlign="center" fontSize="sm" color="gray.500">
+        <p className="login-footer">
           Pas encore de compte ?{" "}
           <RouterLink to="/register">
-            <Text as="span" color="blue.600" fontWeight="bold">
-              S'inscrire
-            </Text>
+            <span className="link">S'inscrire</span>
           </RouterLink>
-        </Text>
-      </VStack>
-    </Box>
+        </p>
+      </div>
+    </div>
   );
 }
 

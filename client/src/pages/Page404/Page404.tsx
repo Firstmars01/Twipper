@@ -1,21 +1,15 @@
-import { Box, Heading, Text, Button } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import "./Page404.css";
 
 function Page404() {
   return (
-    <Box textAlign="center" mt={20}>
-      <Heading size="4xl" color="blue.600">
-        404
-      </Heading>
-      <Text mt={4} fontSize="lg" color="gray.500">
-        Cette page n'existe pas.
-      </Text>
+    <div className="page404">
+      <h1>404</h1>
+      <p>Cette page n'existe pas.</p>
       <RouterLink to="/">
-        <Button mt={6} bg="blue.600" color="white" _hover={{ bg: "blue.500" }}>
-          Retour à l'accueil
-        </Button>
+        <button>Retour à l'accueil</button>
       </RouterLink>
-    </Box>
+    </div>
   );
 }
 

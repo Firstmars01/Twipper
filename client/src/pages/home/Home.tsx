@@ -1,13 +1,13 @@
-import { Box, Heading, Text, Button } from "@chakra-ui/react"
+import "./Home.css";
 
 function Home() {
   return (
-    <Box p={8}>
-      <Heading>Twipper</Heading>
-      <Text>Bienvenue sur Twipper !</Text>
-      <Button mt={4}>Se connecter</Button>
-    </Box>
-  )
+    <div className="home">
+      <h1>Twipper</h1>
+      <p>Bienvenue sur Twipper !</p>
+      <button>Se connecter</button>
+    </div>
+  );
 }
 
-export default Home
+export default Home;
