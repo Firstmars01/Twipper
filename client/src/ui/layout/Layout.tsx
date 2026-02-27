@@ -1,15 +1,16 @@
+import { Box } from "@chakra-ui/react";
 import { Outlet } from "react-router-dom";
 import TopBar from "../topbar/TopBar";
 import "./Layout.css";
 
 function Layout() {
   return (
-    <div className="layout">
+    <Box className="layout">
       <TopBar />
-      <main className="layout-main">
+      <Box as="main" className="layout-main">
         <Outlet />
-      </main>
-    </div>
+      </Box>
+    </Box>
   );
 }
 

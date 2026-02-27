@@ -2,26 +2,12 @@
   padding: 2rem;
 }
 
-.home h1 {
-  font-size: 2rem;
-  font-weight: bold;
-}
-
-.home p {
-  margin-top: 0.5rem;
-}
-
-.home button {
+.home-btn {
   margin-top: 1rem;
-  background-color: #2b6cb0;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  font-weight: 500;
+  background-color: #2b6cb0 !important;
+  color: white !important;
 }
 
-.home button:hover {
-  background-color: #2c5282;
+.home-btn:hover {
+  background-color: #2c5282 !important;
 }

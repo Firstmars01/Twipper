@@ -1,3 +1,4 @@
+import { Box, Heading, Text } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import "./Profile.css";
 
@@ -5,10 +6,12 @@ function Profile() {
   const { username } = useParams();
 
   return (
-    <div className="profile">
-      <h1>@{username}</h1>
-      <p>Page de profil (à compléter)</p>
-    </div>
+    <Box className="profile">
+      <Heading className="profile-title">@{username}</Heading>
+      <Text className="profile-subtitle">
+        Page de profil (à compléter)
+      </Text>
+    </Box>
   );
 }
 

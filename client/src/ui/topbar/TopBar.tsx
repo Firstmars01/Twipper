@@ -1,24 +1,27 @@
+import { Box, Flex, Heading, Button, HStack } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 import "./TopBar.css";
 
 function TopBar() {
   return (
-    <nav className="topbar">
-      <div className="topbar-inner">
+    <Box as="nav" className="topbar">
+      <Flex className="topbar-inner">
         <RouterLink to="/">
-          <span className="topbar-title">🐦 Twipper</span>
+          <Heading className="topbar-title">
+            🐦 Twipper
+          </Heading>
         </RouterLink>
 
-        <div className="topbar-actions">
+        <HStack className="topbar-actions">
           <RouterLink to="/login">
-            <button className="topbar-btn-login">Connexion</button>
+            <Button className="topbar-btn-login">Connexion</Button>
           </RouterLink>
           <RouterLink to="/register">
-            <button className="topbar-btn-register">Sing up</button>
+            <Button className="topbar-btn-register">Inscription</Button>
           </RouterLink>
-        </div>
-      </div>
-    </nav>
+        </HStack>
+      </Flex>
+    </Box>
   );
 }
 

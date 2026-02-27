@@ -1,12 +1,13 @@
+import { Box, Heading, Text, Button } from "@chakra-ui/react";
 import "./Home.css";
 
 function Home() {
   return (
-    <div className="home">
-      <h1>Twipper</h1>
-      <p>Bienvenue sur Twipper !</p>
-      <button>Se connecter</button>
-    </div>
+    <Box className="home">
+      <Heading>Twipper</Heading>
+      <Text>Bienvenue sur Twipper !</Text>
+      <Button className="home-btn">Se connecter</Button>
+    </Box>
   );
 }
 
