@@ -40,12 +40,11 @@
   border-color: #e0245e;
 }
 
-/* Stat links (abonnés / abonnements) */
 .stat-link:hover {
   text-decoration: underline;
+  cursor: pointer;
 }
 
-/* Follow dialog */
 .follow-dialog {
   max-height: 70vh;
 }

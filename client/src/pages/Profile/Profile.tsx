@@ -123,12 +123,21 @@ function Profile() {
 
       <Box className="profile-stats">
         <Text><strong>{user._count.tweets}</strong> tweets</Text>
-        <Text className="stat-link" onClick={() => openDialog("followers")}>
-          <strong>{user._count.followers}</strong> abonnés
-        </Text>
-        <Text className="stat-link" onClick={() => openDialog("following")}>
-          <strong>{user._count.following}</strong> abonnements
-        </Text>
+        {isOwnProfile ? (
+          <>
+            <Text className="stat-link" onClick={() => openDialog("followers")}>
+              <strong>{user._count.followers}</strong> abonnés
+            </Text>
+            <Text className="stat-link" onClick={() => openDialog("following")}>
+              <strong>{user._count.following}</strong> abonnements
+            </Text>
+          </>
+        ) : (
+          <>
+            <Text><strong>{user._count.followers}</strong> abonnés</Text>
+            <Text><strong>{user._count.following}</strong> abonnements</Text>
+          </>
+        )}
       </Box>
 
       <FollowListDialog
