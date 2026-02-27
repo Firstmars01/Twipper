@@ -104,40 +104,46 @@ function Profile() {
 
   return (
     <Box className="profile">
-      <Box className="profile-header">
-        <Box>
-          <Heading className="profile-title">@{user.username}</Heading>
-          <Text className="profile-subtitle">{user.bio || "Aucune bio"}</Text>
+      <Box className="profile-banner" />
+      <Box className="profile-body">
+        <Box className="profile-avatar">
+          {user.username.charAt(0).toUpperCase()}
         </Box>
-        {!isOwnProfile && currentUser && (
-          <Button
-            className={`follow-btn ${user.isFollowing ? "following" : ""}`}
-            onClick={handleFollow}
-            disabled={followLoading}
-            size="sm"
-          >
-            {followLoading ? "..." : user.isFollowing ? "Abonné" : "Suivre"}
-          </Button>
-        )}
-      </Box>
+        <Box className="profile-header">
+          <Box>
+            <Heading className="profile-title">@{user.username}</Heading>
+            <Text className="profile-subtitle">{user.bio || "Aucune bio"}</Text>
+          </Box>
+          {!isOwnProfile && currentUser && (
+            <Button
+              className={`follow-btn ${user.isFollowing ? "following" : ""}`}
+              onClick={handleFollow}
+              disabled={followLoading}
+              size="sm"
+            >
+              {followLoading ? "..." : user.isFollowing ? "Abonné" : "Suivre"}
+            </Button>
+          )}
+        </Box>
 
-      <Box className="profile-stats">
-        <Text><strong>{user._count.tweets}</strong> tweets</Text>
-        {isOwnProfile ? (
-          <>
-            <Text className="stat-link" onClick={() => openDialog("followers")}>
-              <strong>{user._count.followers}</strong> abonnés
-            </Text>
-            <Text className="stat-link" onClick={() => openDialog("following")}>
-              <strong>{user._count.following}</strong> abonnements
-            </Text>
-          </>
-        ) : (
-          <>
-            <Text><strong>{user._count.followers}</strong> abonnés</Text>
-            <Text><strong>{user._count.following}</strong> abonnements</Text>
-          </>
-        )}
+        <Box className="profile-stats">
+          <Text><strong>{user._count.tweets}</strong> tweets</Text>
+          {isOwnProfile ? (
+            <>
+              <Text className="stat-link" onClick={() => openDialog("followers")}>
+                <strong>{user._count.followers}</strong> abonnés
+              </Text>
+              <Text className="stat-link" onClick={() => openDialog("following")}>
+                <strong>{user._count.following}</strong> abonnements
+              </Text>
+            </>
+          ) : (
+            <>
+              <Text><strong>{user._count.followers}</strong> abonnés</Text>
+              <Text><strong>{user._count.following}</strong> abonnements</Text>
+            </>
+          )}
+        </Box>
       </Box>
 
       <FollowListDialog

@@ -1,76 +1,125 @@
+/* ── Profile card ── */
+.profile {
+  max-width: 600px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.profile-banner {
+  height: 120px;
+  background: linear-gradient(135deg, #1da1f2, #0d8ecf);
+}
+
+.profile-body {
+  padding: 1.5rem 2rem 2rem;
+}
+
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  background: #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1da1f2;
+  margin-top: -50px;
+}
+
+/* ── Header (title + follow btn) ── */
 .profile-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
+  margin-top: 0.75rem;
 }
 
 .profile-title {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1a202c;
 }
 
 .profile-subtitle {
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
   color: #718096;
+  font-size: 0.95rem;
+  line-height: 1.4;
 }
 
+/* ── Follow button ── */
 .follow-btn {
-  background-color: #1da1f2;
-  color: white;
-  border: 2px solid #1da1f2;
-  border-radius: 20px;
-  padding: 0.3rem 1.2rem;
+  background: linear-gradient(135deg, #1da1f2, #0d8ecf);
+  color: #fff;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  padding: 0.4rem 1.4rem;
   font-weight: 600;
+  font-size: 0.875rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 8px rgba(29, 161, 242, 0.3);
 }
 
 .follow-btn:hover {
-  background-color: #1a91da;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(29, 161, 242, 0.4);
 }
 
 .follow-btn.following {
-  background-color: white;
+  background: #fff;
   color: #1da1f2;
   border: 2px solid #1da1f2;
+  box-shadow: none;
 }
 
 .follow-btn.following:hover {
-  background-color: #fde8e8;
+  background: #fef2f2;
   color: #e0245e;
   border-color: #e0245e;
 }
 
-.stat-link:hover {
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-.follow-dialog {
-  max-height: 70vh;
-}
-
-.follow-list {
+/* ── Stats ── */
+.profile-stats {
   display: flex;
-  flex-direction: column;
+  gap: 2rem;
+  margin-top: 1.25rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #edf2f7;
 }
 
-.follow-list-item {
-  display: block;
-  padding: 0.75rem 0;
-  border-bottom: 1px solid #e2e8f0;
-  text-decoration: none;
-  color: inherit;
-  transition: background 0.15s;
-  padding-inline: 0.5rem;
-  border-radius: 6px;
+.profile-stats p {
+  font-size: 0.9rem;
+  color: #4a5568;
 }
 
-.follow-list-item:last-child {
-  border-bottom: none;
+.profile-stats strong {
+  font-size: 1.05rem;
+  color: #1a202c;
+  margin-right: 0.25rem;
 }
 
-.follow-list-item:hover {
-  background-color: #f7fafc;
+.stat-link {
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0.25rem 0.5rem;
+  margin: -0.25rem -0.5rem;
+  transition: background 0.2s ease;
 }
 
+.stat-link:hover {
+  background: #edf2f7;
+}
 
+/* ── Loading ── */
+.profile-loading {
+  display: flex;
+  justify-content: center;
+  padding: 4rem;
+}
