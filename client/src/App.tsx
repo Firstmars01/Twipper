@@ -1,13 +1,11 @@
+import Root from "./app/Root";
+
 
 function App() {
-
   return (
-    <>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <Root />
+
+  );
 }
 
-export default App
+export default App;

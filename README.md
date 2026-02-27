@@ -1,6 +1,6 @@
 # Frontend
 
-- React + TypeScript + Vite
+- React + TypeScript + Vite + Chakra UI 
 
 ```cmd
 npm run dev
