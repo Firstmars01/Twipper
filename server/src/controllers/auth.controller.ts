@@ -77,6 +77,11 @@ export async function login(req: Request, res: Response) {
       expiresIn: "7d",
     });
 
+    // Génération du refresh token
+    const refreshToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
+      expiresIn: "30d",
+    });
+
     res.json({
       user: {
         id: user.id,
@@ -86,6 +91,7 @@ export async function login(req: Request, res: Response) {
         avatar: user.avatar,
       },
       token,
+      refreshToken,
     });
   } catch (error) {
     console.error("Login error:", error);

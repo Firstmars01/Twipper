@@ -1,19 +1,38 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Box, Heading, Text, Input, Button, VStack } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { apiLogin, saveAuth } from "../../service/api";
+import { validateLoginForm } from "../../utils/validation";
+import { toaster } from "../../utils/toaster";
 import "./Login.css";
 
 function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    setError("");
+    setFieldErrors({});
+
+    // Validation front-end
+    const errors = validateLoginForm({ email, password });
+    if (errors.length > 0) {
+      const errMap: Record<string, string> = {};
+      errors.forEach((err) => {
+        errMap[err.field] = err.message;
+        toaster.create({
+          title: err.message,
+          type: "error",
+          duration: 4000,
+        });
+      });
+      setFieldErrors(errMap);
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -21,7 +40,12 @@ function Login() {
       saveAuth(data);
       navigate("/");
     } catch (err: any) {
-      setError(err.message);
+      toaster.create({
+        title: "Erreur de connexion",
+        description: err.message,
+        type: "error",
+        duration: 5000,
+      });
     } finally {
       setLoading(false);
     }
@@ -33,26 +57,31 @@ function Login() {
         <VStack className="login-form">
           <Heading className="login-title">Connexion</Heading>
 
-          {error && (
-            <Text color="red.500" fontSize="sm">
-              {error}
-            </Text>
-          )}
+          <Box width="100%">
+            <Input
+              placeholder="Email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              borderColor={fieldErrors.email ? "red.500" : undefined}
+            />
+            {fieldErrors.email && (
+              <Text color="red.500" fontSize="xs" mt={1}>{fieldErrors.email}</Text>
+            )}
+          </Box>
 
-          <Input
-            placeholder="Email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <Input
-            placeholder="Mot de passe"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <Box width="100%">
+            <Input
+              placeholder="Mot de passe"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              borderColor={fieldErrors.password ? "red.500" : undefined}
+            />
+            {fieldErrors.password && (
+              <Text color="red.500" fontSize="xs" mt={1}>{fieldErrors.password}</Text>
+            )}
+          </Box>
 
           <Button className="login-btn" type="submit" disabled={loading}>
             {loading ? "Connexion..." : "Se connecter"}

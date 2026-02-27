@@ -29,12 +29,19 @@ export async function apiRegister(
     body: JSON.stringify({ email, username, password }),
   });
 
-  if (!res.ok) {
-    const body: ApiError = await res.json();
-    throw new Error(body.error || "Erreur lors de l'inscription");
+  const body = await res.text();
+  let parsed: any;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    throw new Error("Le serveur ne répond pas correctement");
   }
 
-  return res.json();
+  if (!res.ok) {
+    throw new Error(parsed?.error || "Erreur lors de l'inscription");
+  }
+
+  return parsed;
 }
 
 export async function apiLogin(
@@ -47,12 +54,19 @@ export async function apiLogin(
     body: JSON.stringify({ email, password }),
   });
 
-  if (!res.ok) {
-    const body: ApiError = await res.json();
-    throw new Error(body.error || "Erreur lors de la connexion");
+  const loginBody = await res.text();
+  let parsed: any;
+  try {
+    parsed = JSON.parse(loginBody);
+  } catch {
+    throw new Error("Le serveur ne répond pas correctement");
   }
 
-  return res.json();
+  if (!res.ok) {
+    throw new Error(parsed?.error || "Erreur lors de la connexion");
+  }
+
+  return parsed;
 }
 
 export async function apiGetMe(token: string): Promise<{ user: AuthResponse["user"] }> {
