@@ -1,8 +1,18 @@
-import { Box, Flex, Heading, Button, HStack } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
+import { Box, Flex, Heading, Button, HStack, Text } from "@chakra-ui/react";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { isAuthenticated, getStoredUser, logout } from "../../service/api";
 import "./TopBar.css";
 
 function TopBar() {
+  const navigate = useNavigate();
+  const authenticated = isAuthenticated();
+  const user = getStoredUser();
+
+  function handleLogout() {
+    logout();
+    navigate("/login");
+  }
+
   return (
     <Box as="nav" className="topbar">
       <Flex className="topbar-inner">
@@ -13,12 +23,23 @@ function TopBar() {
         </RouterLink>
 
         <HStack className="topbar-actions">
-          <RouterLink to="/login">
-            <Button className="topbar-btn-login">Connexion</Button>
-          </RouterLink>
-          <RouterLink to="/register">
-            <Button className="topbar-btn-register">Inscription</Button>
-          </RouterLink>
+          {authenticated && user ? (
+            <>
+              <Text fontWeight="bold">@{user.username}</Text>
+              <Button className="topbar-btn-login" onClick={handleLogout}>
+                Déconnexion
+              </Button>
+            </>
+          ) : (
+            <>
+              <RouterLink to="/login">
+                <Button className="topbar-btn-login">Connexion</Button>
+              </RouterLink>
+              <RouterLink to="/register">
+                <Button className="topbar-btn-register">Inscription</Button>
+              </RouterLink>
+            </>
+          )}
         </HStack>
       </Flex>
     </Box>
