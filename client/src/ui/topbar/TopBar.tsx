@@ -1,4 +1,4 @@
-import { Box, Flex, Heading, Button, HStack, Text } from "@chakra-ui/react";
+import { Box, Flex, Heading, Button, HStack } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { isAuthenticated, getStoredUser, logout } from "../../service/api";
 import "./TopBar.css";
@@ -25,7 +25,9 @@ function TopBar() {
         <HStack className="topbar-actions">
           {authenticated && user ? (
             <>
-              <Button className="topbar-btn-user" onClick={() => navigate(`/profile/${user.username}`)}>@{user.username}</Button>
+              <Button className="topbar-btn-user" onClick={() => navigate(`/profile/${user.username}`)}>
+                @{user.username}
+              </Button>
               <Button className="topbar-btn-logout" onClick={handleLogout}>
                 Déconnexion
               </Button>

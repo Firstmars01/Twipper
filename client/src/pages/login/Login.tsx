@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Box, Heading, Text, Input, Button, VStack } from "@chakra-ui/react";
+import { Box, Heading, Text, Input, Button, VStack, Checkbox } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { apiLogin, saveAuth } from "../../service/api";
 import { validateLoginForm } from "../../utils/validation";
@@ -10,6 +10,7 @@ function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
 
@@ -37,7 +38,7 @@ function Login() {
 
     try {
       const data = await apiLogin(email, password);
-      saveAuth(data);
+      saveAuth(data, rememberMe);
       navigate("/");
     } catch (err: any) {
       toaster.create({
@@ -86,6 +87,14 @@ function Login() {
           <Button className="login-btn" type="submit" disabled={loading}>
             {loading ? "Connexion..." : "Se connecter"}
           </Button>
+
+          <Checkbox.Root className="login-checkbox" checked={rememberMe} onCheckedChange={(e) => setRememberMe(e.checked === true)}>
+            <Checkbox.HiddenInput />
+            <Checkbox.Control>
+              <Checkbox.Indicator />
+            </Checkbox.Control>
+            <Checkbox.Label>Se souvenir de moi</Checkbox.Label>
+          </Checkbox.Root>
 
           <Text className="login-footer">
             Pas encore de compte ?{" "}

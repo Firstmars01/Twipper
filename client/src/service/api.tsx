@@ -84,29 +84,39 @@ export async function apiGetMe(token: string): Promise<{ user: AuthResponse["use
 
 // --- Helpers ---
 
-export function saveAuth(data: AuthResponse) {
-  localStorage.setItem("token", data.token);
-  localStorage.setItem("refreshToken", data.refreshToken);
-  localStorage.setItem("user", JSON.stringify(data.user));
+export function saveAuth(data: AuthResponse, rememberMe?: boolean) {
+  if (rememberMe !== undefined) {
+    localStorage.setItem("rememberMe", String(rememberMe));
+  }
+
+  const storage = rememberMe === false ? sessionStorage : localStorage;
+  storage.setItem("token", data.token);
+  storage.setItem("refreshToken", data.refreshToken);
+  storage.setItem("user", JSON.stringify(data.user));
 }
 
 export function getToken(): string | null {
-  return localStorage.getItem("token");
+  return localStorage.getItem("token") || sessionStorage.getItem("token");
 }
 
 export function getRefreshToken(): string | null {
-  return localStorage.getItem("refreshToken");
+  return localStorage.getItem("refreshToken") || sessionStorage.getItem("refreshToken");
 }
 
 export function getStoredUser(): AuthResponse["user"] | null {
-  const raw = localStorage.getItem("user");
+  const raw = localStorage.getItem("user") || sessionStorage.getItem("user");
   return raw ? JSON.parse(raw) : null;
 }
 
 export function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("refreshToken");
+  localStorage.removeItem("rememberMe");
   localStorage.removeItem("user");
+  sessionStorage.removeItem("token");
+  sessionStorage.removeItem("refreshToken");
+  sessionStorage.removeItem("user");
+
 }
 
 export function isAuthenticated(): boolean {
