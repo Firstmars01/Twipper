@@ -82,6 +82,25 @@ export async function apiGetMe(token: string): Promise<{ user: AuthResponse["use
   return res.json();
 }
 
+// --- Users ---
+
+export async function apiGetUserByUsername(username: string) {
+  const res = await fetchWithAuth(`${API_BASE}/users/${encodeURIComponent(username)}`);
+
+  if (res.status === 404) {
+    return null;
+  }
+
+  if (!res.ok) {
+    throw new Error("Erreur lors de la récupération du profil");
+  }
+
+  const data = await res.json();
+  return data.user as AuthResponse["user"] & {
+    _count: { tweets: number; followers: number; following: number };
+  };
+}
+
 // --- Helpers ---
 
 export function saveAuth(data: AuthResponse, rememberMe?: boolean) {
