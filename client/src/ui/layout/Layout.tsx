@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { Toaster, ToastTitle, ToastDescription, ToastRoot, ToastCloseTrigger, ToastIndicator } from "@chakra-ui/react";
 import TopBar from "../topbar/TopBar";
 import { toaster } from "../../utils/toaster";
-import "./Layout.css";
+import "./Style.css";
 
 function getTypeClass(type: string | undefined) {
   if (type === "error") return "error";

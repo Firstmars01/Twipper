@@ -1,10 +1,11 @@
 import { useState, type FormEvent } from "react";
-import { Box, Heading, Text, Input, Button, VStack, Checkbox } from "@chakra-ui/react";
+import { Box, Heading, Text, Button, VStack, Checkbox } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { apiLogin, saveAuth } from "../../service/api";
 import { validateLoginForm } from "../../utils/validation";
 import { toaster } from "../../utils/toaster";
-import "./Login.css";
+import FormField from "../../ui/form-field/FormField";
+import "./Style.css";
 
 function Login() {
   const navigate = useNavigate();
@@ -58,31 +59,21 @@ function Login() {
         <VStack className="login-form">
           <Heading className="login-title">Connexion</Heading>
 
-          <Box width="100%">
-            <Input
-              placeholder="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              borderColor={fieldErrors.email ? "red.500" : undefined}
-            />
-            {fieldErrors.email && (
-              <Text color="red.500" fontSize="xs" mt={1}>{fieldErrors.email}</Text>
-            )}
-          </Box>
+          <FormField
+            placeholder="Email"
+            type="email"
+            value={email}
+            onChange={setEmail}
+            error={fieldErrors.email}
+          />
 
-          <Box width="100%">
-            <Input
-              placeholder="Mot de passe"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              borderColor={fieldErrors.password ? "red.500" : undefined}
-            />
-            {fieldErrors.password && (
-              <Text color="red.500" fontSize="xs" mt={1}>{fieldErrors.password}</Text>
-            )}
-          </Box>
+          <FormField
+            placeholder="Mot de passe"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            error={fieldErrors.password}
+          />
 
           <Button className="login-btn" type="submit" disabled={loading}>
             {loading ? "Connexion..." : "Se connecter"}

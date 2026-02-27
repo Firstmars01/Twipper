@@ -39,3 +39,39 @@
   color: #e0245e;
   border-color: #e0245e;
 }
+
+/* Stat links (abonnés / abonnements) */
+.stat-link:hover {
+  text-decoration: underline;
+}
+
+/* Follow dialog */
+.follow-dialog {
+  max-height: 70vh;
+}
+
+.follow-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.follow-list-item {
+  display: block;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e2e8f0;
+  text-decoration: none;
+  color: inherit;
+  transition: background 0.15s;
+  padding-inline: 0.5rem;
+  border-radius: 6px;
+}
+
+.follow-list-item:last-child {
+  border-bottom: none;
+}
+
+.follow-list-item:hover {
+  background-color: #f7fafc;
+}
+
+

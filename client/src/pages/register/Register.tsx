@@ -1,10 +1,11 @@
 import { useState, type FormEvent } from "react";
-import { Box, Heading, Text, Input, Button, VStack } from "@chakra-ui/react";
+import { Box, Heading, Text, Button, VStack } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { apiRegister, saveAuth } from "../../service/api";
 import { validateRegisterForm } from "../../utils/validation";
 import { toaster } from "../../utils/toaster";
-import "./Register.css";
+import FormField from "../../ui/form-field/FormField";
+import "./Style.css";
 
 function Register() {
   const navigate = useNavigate();
@@ -60,56 +61,36 @@ function Register() {
         <VStack className="register-form">
           <Heading className="register-title">Inscription</Heading>
 
-          <Box width="100%">
-            <Input
-              placeholder="Nom d'utilisateur"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              borderColor={fieldErrors.username ? "red.500" : undefined}
-            />
-            {fieldErrors.username && (
-              <Text color="red.500" fontSize="xs" mt={1}>{fieldErrors.username}</Text>
-            )}
-          </Box>
+          <FormField
+            placeholder="Nom d'utilisateur"
+            value={username}
+            onChange={setUsername}
+            error={fieldErrors.username}
+          />
 
-          <Box width="100%">
-            <Input
-              placeholder="Email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              borderColor={fieldErrors.email ? "red.500" : undefined}
-            />
-            {fieldErrors.email && (
-              <Text color="red.500" fontSize="xs" mt={1}>{fieldErrors.email}</Text>
-            )}
-          </Box>
+          <FormField
+            placeholder="Email"
+            type="email"
+            value={email}
+            onChange={setEmail}
+            error={fieldErrors.email}
+          />
 
-          <Box width="100%">
-            <Input
-              placeholder="Mot de passe"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              borderColor={fieldErrors.password ? "red.500" : undefined}
-            />
-            {fieldErrors.password && (
-              <Text color="red.500" fontSize="xs" mt={1}>{fieldErrors.password}</Text>
-            )}
-          </Box>
+          <FormField
+            placeholder="Mot de passe"
+            type="password"
+            value={password}
+            onChange={setPassword}
+            error={fieldErrors.password}
+          />
 
-          <Box width="100%">
-            <Input
-              placeholder="Confirmer le mot de passe"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              borderColor={fieldErrors.confirmPassword ? "red.500" : undefined}
-            />
-            {fieldErrors.confirmPassword && (
-              <Text color="red.500" fontSize="xs" mt={1}>{fieldErrors.confirmPassword}</Text>
-            )}
-          </Box>
+          <FormField
+            placeholder="Confirmer le mot de passe"
+            type="password"
+            value={confirmPassword}
+            onChange={setConfirmPassword}
+            error={fieldErrors.confirmPassword}
+          />
 
           <Button className="register-btn" type="submit" disabled={loading}>
             {loading ? "Inscription..." : "S'inscrire"}

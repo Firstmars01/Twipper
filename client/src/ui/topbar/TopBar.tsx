@@ -1,7 +1,7 @@
 import { Box, Flex, Heading, Button, HStack } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { isAuthenticated, getStoredUser, logout } from "../../service/api";
-import "./TopBar.css";
+import "./Style.css";
 
 function TopBar() {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import { Box, Heading, Text, Button } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
-import "./Page404.css";
+import "./Style.css";
 
 function Page404() {
   return (

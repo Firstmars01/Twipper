@@ -1,5 +1,5 @@
 import { Box, Heading, Text } from "@chakra-ui/react";
-import "./Home.css";
+import "./Style.css";
 
 function Home() {
   return (
