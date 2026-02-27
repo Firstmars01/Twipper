@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma";
 
 const JWT_SECRET = process.env.JWT_SECRET || "default_secret";
+const REFRESH_SECRET = process.env.REFRESH_SECRET || "default_refresh_secret";
 
 // POST /api/auth/register
 export async function register(req: Request, res: Response) {
@@ -34,12 +35,15 @@ export async function register(req: Request, res: Response) {
       select: { id: true, email: true, username: true, createdAt: true },
     });
 
-    // Génération du token
+    // Génération des tokens
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: "15m",
+    });
+    const refreshToken = jwt.sign({ userId: user.id }, REFRESH_SECRET, {
+      expiresIn: "30d",
     });
 
-    res.status(201).json({ user, token });
+    res.status(201).json({ user, token, refreshToken });
   } catch (error) {
     console.error("Register error:", error);
     res.status(500).json({ error: "Erreur interne" });
@@ -74,11 +78,11 @@ export async function login(req: Request, res: Response) {
 
     // Génération du token
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
-      expiresIn: "7d",
+      expiresIn: "15m",
     });
 
     // Génération du refresh token
-    const refreshToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
+    const refreshToken = jwt.sign({ userId: user.id }, REFRESH_SECRET, {
       expiresIn: "30d",
     });
 
@@ -125,6 +129,57 @@ export async function getMe(req: Request, res: Response) {
     res.json({ user });
   } catch (error) {
     console.error("GetMe error:", error);
+    res.status(500).json({ error: "Erreur interne" });
+  }
+}
+
+// POST /api/auth/refresh
+export async function refreshToken(req: Request, res: Response) {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      res.status(400).json({ error: "Refresh token requis" });
+      return;
+    }
+
+    // Vérifier le refresh token
+    let decoded: { userId: string };
+    try {
+      decoded = jwt.verify(refreshToken, REFRESH_SECRET) as { userId: string };
+    } catch {
+      res.status(401).json({ error: "Refresh token invalide ou expiré" });
+      return;
+    }
+
+    // Vérifier que l'utilisateur existe toujours
+    const user = await prisma.user.findUnique({
+      where: { id: decoded.userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        bio: true,
+        avatar: true,
+      },
+    });
+
+    if (!user) {
+      res.status(401).json({ error: "Utilisateur introuvable" });
+      return;
+    }
+
+    // Générer un nouveau access token + refresh token
+    const newToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
+      expiresIn: "15m",
+    });
+    const newRefreshToken = jwt.sign({ userId: user.id }, REFRESH_SECRET, {
+      expiresIn: "30d",
+    });
+
+    res.json({ user, token: newToken, refreshToken: newRefreshToken });
+  } catch (error) {
+    console.error("Refresh error:", error);
     res.status(500).json({ error: "Erreur interne" });
   }
 }

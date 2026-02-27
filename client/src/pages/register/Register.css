@@ -14,12 +14,12 @@
 }
 
 .register-btn {
-  background-color: #2b6cb0 !important;
-  color: white !important;
+  background-color: #2b6cb0 ;
+  color: white ;
 }
 
 .register-btn:hover {
-  background-color: #2c5282 !important;
+  background-color: #2c5282 ;
 }
 
 .register-footer {
@@ -29,7 +29,7 @@
 }
 
 .register-link {
-  color: #2b6cb0 !important;
+  color: #2b6cb0 ;
   font-weight: bold;
 }
 

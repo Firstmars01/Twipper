@@ -2,8 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import { authRouter } from "./routes/auth.routes";
-import { tweetRouter } from "./routes/tweet.routes";
-import { userRouter } from "./routes/user.routes";
+
 import { errorHandler } from "./middleware/error.middleware";
 
 dotenv.config();
@@ -21,8 +20,7 @@ app.get("/api/health", (_req, res) => {
 });
 
 app.use("/api/auth", authRouter);
-app.use("/api/tweets", tweetRouter);
-app.use("/api/users", userRouter);
+
 
 // --- Error handler (doit être le dernier middleware) ---
 app.use(errorHandler);

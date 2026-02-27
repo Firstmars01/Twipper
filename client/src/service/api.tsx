@@ -10,6 +10,7 @@ export interface AuthResponse {
     createdAt?: string;
   };
   token: string;
+  refreshToken: string;
 }
 
 export interface ApiError {
@@ -85,11 +86,16 @@ export async function apiGetMe(token: string): Promise<{ user: AuthResponse["use
 
 export function saveAuth(data: AuthResponse) {
   localStorage.setItem("token", data.token);
+  localStorage.setItem("refreshToken", data.refreshToken);
   localStorage.setItem("user", JSON.stringify(data.user));
 }
 
 export function getToken(): string | null {
   return localStorage.getItem("token");
+}
+
+export function getRefreshToken(): string | null {
+  return localStorage.getItem("refreshToken");
 }
 
 export function getStoredUser(): AuthResponse["user"] | null {
@@ -99,9 +105,71 @@ export function getStoredUser(): AuthResponse["user"] | null {
 
 export function logout() {
   localStorage.removeItem("token");
+  localStorage.removeItem("refreshToken");
   localStorage.removeItem("user");
 }
 
 export function isAuthenticated(): boolean {
   return !!getToken();
+}
+
+// --- Refresh token ---
+
+async function apiRefresh(): Promise<AuthResponse> {
+  const rt = getRefreshToken();
+  if (!rt) throw new Error("Pas de refresh token");
+
+  const res = await fetch(`${API_BASE}/auth/refresh`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refreshToken: rt }),
+  });
+
+  const body = await res.text();
+  let parsed: any;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    throw new Error("Le serveur ne répond pas correctement");
+  }
+
+  if (!res.ok) {
+    throw new Error(parsed?.error || "Impossible de rafraîchir la session");
+  }
+
+  return parsed;
+}
+
+/**
+ * fetch authentifié avec refresh automatique.
+ * Si le serveur renvoie 401, tente un refresh puis rejoue la requête.
+ */
+export async function fetchWithAuth(
+  url: string,
+  options: RequestInit = {}
+): Promise<Response> {
+  const token = getToken();
+  const headers = new Headers(options.headers);
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+
+  let res = await fetch(url, { ...options, headers });
+
+  // Si 401 → tenter un refresh
+  if (res.status === 401) {
+    try {
+      const data = await apiRefresh();
+      saveAuth(data);
+
+      // Rejouer la requête avec le nouveau token
+      headers.set("Authorization", `Bearer ${data.token}`);
+      res = await fetch(url, { ...options, headers });
+    } catch {
+      // Refresh échoué → déconnexion
+      logout();
+      window.location.href = "/login";
+      throw new Error("Session expirée, veuillez vous reconnecter");
+    }
+  }
+
+  return res;
 }

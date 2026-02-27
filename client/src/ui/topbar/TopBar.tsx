@@ -25,8 +25,8 @@ function TopBar() {
         <HStack className="topbar-actions">
           {authenticated && user ? (
             <>
-              <Text fontWeight="bold">@{user.username}</Text>
-              <Button className="topbar-btn-login" onClick={handleLogout}>
+              <Button className="topbar-btn-user" onClick={() => navigate(`/profile/${user.username}`)}>@{user.username}</Button>
+              <Button className="topbar-btn-logout" onClick={handleLogout}>
                 Déconnexion
               </Button>
             </>
