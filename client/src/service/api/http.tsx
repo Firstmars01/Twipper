@@ -1,107 +1,6 @@
-const API_BASE = "/api";
+import { API_BASE, type AuthResponse } from "./types";
 
-export interface AuthResponse {
-  user: {
-    id: string;
-    email: string;
-    username: string;
-    bio?: string;
-    avatar?: string;
-    createdAt?: string;
-  };
-  token: string;
-  refreshToken: string;
-}
-
-export interface ApiError {
-  error: string;
-}
-
-// --- Auth ---
-
-export async function apiRegister(
-  email: string,
-  username: string,
-  password: string
-): Promise<AuthResponse> {
-  const res = await fetch(`${API_BASE}/auth/register`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, username, password }),
-  });
-
-  const body = await res.text();
-  let parsed: any;
-  try {
-    parsed = JSON.parse(body);
-  } catch {
-    throw new Error("Le serveur ne répond pas correctement");
-  }
-
-  if (!res.ok) {
-    throw new Error(parsed?.error || "Erreur lors de l'inscription");
-  }
-
-  return parsed;
-}
-
-export async function apiLogin(
-  email: string,
-  password: string
-): Promise<AuthResponse> {
-  const res = await fetch(`${API_BASE}/auth/login`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-
-  const loginBody = await res.text();
-  let parsed: any;
-  try {
-    parsed = JSON.parse(loginBody);
-  } catch {
-    throw new Error("Le serveur ne répond pas correctement");
-  }
-
-  if (!res.ok) {
-    throw new Error(parsed?.error || "Erreur lors de la connexion");
-  }
-
-  return parsed;
-}
-
-export async function apiGetMe(token: string): Promise<{ user: AuthResponse["user"] }> {
-  const res = await fetch(`${API_BASE}/auth/me`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-
-  if (!res.ok) {
-    throw new Error("Non authentifié");
-  }
-
-  return res.json();
-}
-
-// --- Users ---
-
-export async function apiGetUserByUsername(username: string) {
-  const res = await fetchWithAuth(`${API_BASE}/users/${encodeURIComponent(username)}`);
-
-  if (res.status === 404) {
-    return null;
-  }
-
-  if (!res.ok) {
-    throw new Error("Erreur lors de la récupération du profil");
-  }
-
-  const data = await res.json();
-  return data.user as AuthResponse["user"] & {
-    _count: { tweets: number; followers: number; following: number };
-  };
-}
-
-// --- Helpers ---
+// --- Storage helpers ---
 
 export function saveAuth(data: AuthResponse, rememberMe?: boolean) {
   if (rememberMe !== undefined) {
@@ -135,7 +34,6 @@ export function logout() {
   sessionStorage.removeItem("token");
   sessionStorage.removeItem("refreshToken");
   sessionStorage.removeItem("user");
-
 }
 
 export function isAuthenticated(): boolean {

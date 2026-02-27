@@ -1,3 +1,9 @@
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
 .profile-title {
   font-size: 1.5rem;
 }
@@ -5,4 +11,31 @@
 .profile-subtitle {
   margin-top: 0.5rem;
   color: #718096;
+}
+
+.follow-btn {
+  background-color: #1da1f2;
+  color: white;
+  border: 2px solid #1da1f2;
+  border-radius: 20px;
+  padding: 0.3rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.follow-btn:hover {
+  background-color: #1a91da;
+}
+
+.follow-btn.following {
+  background-color: white;
+  color: #1da1f2;
+  border: 2px solid #1da1f2;
+}
+
+.follow-btn.following:hover {
+  background-color: #fde8e8;
+  color: #e0245e;
+  border-color: #e0245e;
 }

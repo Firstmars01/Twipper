@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma";
 
 // GET /api/users/:username
@@ -29,5 +30,27 @@ export async function getUserByUsername(req: Request, res: Response) {
     return;
   }
 
-  res.json({ user });
+  // Vérifier si l'utilisateur connecté suit ce profil
+  let isFollowing = false;
+  const header = req.headers.authorization;
+  if (header && header.startsWith("Bearer ")) {
+    try {
+      const token = header.split(" ")[1];
+      const secret = process.env.JWT_SECRET || "default_secret";
+      const decoded = jwt.verify(token, secret) as { userId: string };
+      const follow = await prisma.follow.findUnique({
+        where: {
+          followerId_followingId: {
+            followerId: decoded.userId,
+            followingId: user.id,
+          },
+        },
+      });
+      isFollowing = !!follow;
+    } catch {
+      // Token invalide → on ignore, isFollowing reste false
+    }
+  }
+
+  res.json({ user: { ...user, isFollowing } });
 }
