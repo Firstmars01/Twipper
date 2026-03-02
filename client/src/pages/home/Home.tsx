@@ -220,13 +220,10 @@ function Home() {
                       </Text>
                     </RouterLink>
                     <Text fontSize="xs" color="gray.500">
-                      {formatDate(tweet.createdAt)}
+                      {tweet.updatedAt && tweet.updatedAt !== tweet.createdAt
+                        ? `modifié le ${formatDate(tweet.updatedAt)}`
+                        : formatDate(tweet.createdAt)}
                     </Text>
-                    {tweet.updatedAt && tweet.updatedAt !== tweet.createdAt && (
-                      <Text fontSize="xs" color="orange.400" fontStyle="italic">
-                        (modifié)
-                      </Text>
-                    )}
                   </HStack>
                 </HStack>
 

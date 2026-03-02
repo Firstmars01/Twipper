@@ -38,6 +38,15 @@ export async function apiGetFeed(page = 1, limit = 20): Promise<Tweet[]> {
   return data;
 }
 
+// GET /api/tweets/user/:username
+export async function apiGetUserTweets(username: string, page = 1, limit = 20): Promise<Tweet[]> {
+  const res = await fetchWithAuth(`${API_BASE}/tweets/user/${username}?page=${page}&limit=${limit}`);
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Erreur lors du chargement des tweets");
+  return data;
+}
+
 // PUT /api/tweets/:id
 export async function apiUpdateTweet(id: string, content: string): Promise<Tweet> {
   const res = await fetchWithAuth(`${API_BASE}/tweets/${id}`, {

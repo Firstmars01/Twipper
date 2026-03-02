@@ -76,6 +76,40 @@ export async function getFeed(req: AuthRequest, res: Response) {
   }
 }
 
+// GET /api/tweets/user/:username
+export async function getUserTweets(req: AuthRequest, res: Response) {
+  try {
+    const { username } = req.params;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const skip = (page - 1) * limit;
+
+    const user = await prisma.user.findUnique({ where: { username } });
+    if (!user) {
+      res.status(404).json({ error: "Utilisateur introuvable" });
+      return;
+    }
+
+    const tweets = await prisma.tweet.findMany({
+      where: { authorId: user.id },
+      include: {
+        author: {
+          select: { id: true, username: true, avatar: true },
+        },
+        _count: { select: { likes: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    });
+
+    res.json(tweets);
+  } catch (error) {
+    console.error("Get user tweets error:", error);
+    res.status(500).json({ error: "Erreur interne" });
+  }
+}
+
 // PUT /api/tweets/:id
 export async function updateTweet(req: AuthRequest, res: Response) {
   try {
