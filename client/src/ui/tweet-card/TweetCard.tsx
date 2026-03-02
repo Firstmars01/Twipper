@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import {
   Box,
   Button,
@@ -8,8 +8,9 @@ import {
   Avatar,
 } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
+import { FaHeart, FaRegHeart } from "react-icons/fa";
 import type { Tweet } from "../../service/api";
-import { apiUpdateTweet, apiDeleteTweet } from "../../service/api";
+import { apiUpdateTweet, apiDeleteTweet, apiLikeTweet, apiUnlikeTweet } from "../../service/api";
 import { toaster } from "../../utils/toaster";
 import "./TweetCard.css";
 
@@ -20,6 +21,8 @@ interface TweetCardProps {
   onUpdated?: (updated: Tweet) => void;
   /** Appelé après une suppression réussie, avec l'id du tweet */
   onDeleted?: (id: string) => void;
+  /** Appelé après un like/unlike, avec l'id, isLiked et le nouveau count */
+  onLikeChanged?: (id: string, isLiked: boolean, likes: number) => void;
   /** Masquer le lien vers le profil (utile sur la page profil) */
   hideAuthorLink?: boolean;
 }
@@ -39,11 +42,21 @@ function TweetCard({
   currentUserId,
   onUpdated,
   onDeleted,
+  onLikeChanged,
   hideAuthorLink = false,
 }: TweetCardProps) {
   const [editing, setEditing] = useState(false);
   const [editContent, setEditContent] = useState("");
   const [editLoading, setEditLoading] = useState(false);
+  const [likeLoading, setLikeLoading] = useState(false);
+  const [liked, setLiked] = useState(tweet.isLiked);
+  const [likesCount, setLikesCount] = useState(tweet._count.likes);
+
+  // Sync si le tweet prop change (ex: après rechargement)
+  useEffect(() => {
+    setLiked(tweet.isLiked);
+    setLikesCount(tweet._count.likes);
+  }, [tweet.isLiked, tweet._count.likes]);
 
   const isOwner = currentUserId === tweet.author.id;
 
@@ -102,6 +115,37 @@ function TweetCard({
         type: "error",
         duration: 4000,
       });
+    }
+  }
+
+  async function handleToggleLike() {
+    if (!currentUserId) return;
+    // Mise à jour optimiste
+    const wasLiked = liked;
+    const prevCount = likesCount;
+    setLiked(!wasLiked);
+    setLikesCount(wasLiked ? prevCount - 1 : prevCount + 1);
+    setLikeLoading(true);
+    try {
+      const result = wasLiked
+        ? await apiUnlikeTweet(tweet.id)
+        : await apiLikeTweet(tweet.id);
+      // Sync avec le serveur
+      setLiked(result.isLiked);
+      setLikesCount(result.likes);
+      onLikeChanged?.(tweet.id, result.isLiked, result.likes);
+    } catch (err: any) {
+      // Rollback
+      setLiked(wasLiked);
+      setLikesCount(prevCount);
+      toaster.create({
+        title: "Erreur",
+        description: err.message,
+        type: "error",
+        duration: 4000,
+      });
+    } finally {
+      setLikeLoading(false);
     }
   }
 
@@ -180,9 +224,14 @@ function TweetCard({
 
           {/* Pied : likes + actions */}
           <div className="tweet-card-footer">
-            <span className="tweet-card-likes">
-              {tweet._count.likes} like{tweet._count.likes !== 1 ? "s" : ""}
-            </span>
+            <button
+              className={`tweet-card-like-btn ${liked ? "tweet-card-like-btn--liked" : ""}`}
+              onClick={handleToggleLike}
+              disabled={likeLoading || !currentUserId}
+              type="button"
+            >
+              {liked ? <FaHeart /> : <FaRegHeart />} {likesCount}
+            </button>
             {isOwner && !editing && (
               <div className="tweet-card-actions">
                 <Button

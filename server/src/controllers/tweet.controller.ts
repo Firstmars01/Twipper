@@ -2,6 +2,26 @@ import { Response } from "express";
 import prisma from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
 
+// Helper : include commun pour les requêtes tweet
+function tweetInclude(userId: string) {
+  return {
+    author: {
+      select: { id: true, username: true, avatar: true },
+    },
+    _count: { select: { likes: true } },
+    likes: {
+      where: { userId },
+      select: { id: true },
+    },
+  };
+}
+
+// Transforme le résultat Prisma pour ajouter isLiked et retirer le tableau likes
+function formatTweet(tweet: any) {
+  const { likes, ...rest } = tweet;
+  return { ...rest, isLiked: likes.length > 0 };
+}
+
 // POST /api/tweets
 export async function createTweet(req: AuthRequest, res: Response) {
   try {
@@ -22,15 +42,10 @@ export async function createTweet(req: AuthRequest, res: Response) {
         content: content.trim(),
         authorId: req.userId!,
       },
-      include: {
-        author: {
-          select: { id: true, username: true, avatar: true },
-        },
-        _count: { select: { likes: true } },
-      },
+      include: tweetInclude(req.userId!),
     });
 
-    res.status(201).json(tweet);
+    res.status(201).json(formatTweet(tweet));
   } catch (error) {
     console.error("Create tweet error:", error);
     res.status(500).json({ error: "Erreur interne" });
@@ -58,18 +73,13 @@ export async function getFeed(req: AuthRequest, res: Response) {
       where: {
         authorId: { in: [userId, ...followingIds] },
       },
-      include: {
-        author: {
-          select: { id: true, username: true, avatar: true },
-        },
-        _count: { select: { likes: true } },
-      },
+      include: tweetInclude(userId),
       orderBy: { createdAt: "desc" },
       skip,
       take: limit,
     });
 
-    res.json(tweets);
+    res.json(tweets.map(formatTweet));
   } catch (error) {
     console.error("Get feed error:", error);
     res.status(500).json({ error: "Erreur interne" });
@@ -92,18 +102,13 @@ export async function getUserTweets(req: AuthRequest, res: Response) {
 
     const tweets = await prisma.tweet.findMany({
       where: { authorId: user.id },
-      include: {
-        author: {
-          select: { id: true, username: true, avatar: true },
-        },
-        _count: { select: { likes: true } },
-      },
+      include: tweetInclude(req.userId!),
       orderBy: { createdAt: "desc" },
       skip,
       take: limit,
     });
 
-    res.json(tweets);
+    res.json(tweets.map(formatTweet));
   } catch (error) {
     console.error("Get user tweets error:", error);
     res.status(500).json({ error: "Erreur interne" });
@@ -141,15 +146,10 @@ export async function updateTweet(req: AuthRequest, res: Response) {
     const updated = await prisma.tweet.update({
       where: { id },
       data: { content: content.trim() },
-      include: {
-        author: {
-          select: { id: true, username: true, avatar: true },
-        },
-        _count: { select: { likes: true } },
-      },
+      include: tweetInclude(req.userId!),
     });
 
-    res.json(updated);
+    res.json(formatTweet(updated));
   } catch (error) {
     console.error("Update tweet error:", error);
     res.status(500).json({ error: "Erreur interne" });
@@ -178,6 +178,69 @@ export async function deleteTweet(req: AuthRequest, res: Response) {
     res.json({ message: "Tweet supprimé" });
   } catch (error) {
     console.error("Delete tweet error:", error);
+    res.status(500).json({ error: "Erreur interne" });
+  }
+}
+
+// POST /api/tweets/:id/like
+export async function likeTweet(req: AuthRequest, res: Response) {
+  try {
+    const { id } = req.params;
+    const userId = req.userId!;
+
+    const tweet = await prisma.tweet.findUnique({ where: { id } });
+    if (!tweet) {
+      res.status(404).json({ error: "Tweet introuvable" });
+      return;
+    }
+
+    // Vérifier si déjà liké
+    const existing = await prisma.like.findUnique({
+      where: { userId_tweetId: { userId, tweetId: id } },
+    });
+
+    if (existing) {
+      res.status(409).json({ error: "Déjà liké" });
+      return;
+    }
+
+    await prisma.like.create({
+      data: { userId, tweetId: id },
+    });
+
+    const likesCount = await prisma.like.count({ where: { tweetId: id } });
+
+    res.json({ isLiked: true, likes: likesCount });
+  } catch (error) {
+    console.error("Like tweet error:", error);
+    res.status(500).json({ error: "Erreur interne" });
+  }
+}
+
+// DELETE /api/tweets/:id/like
+export async function unlikeTweet(req: AuthRequest, res: Response) {
+  try {
+    const { id } = req.params;
+    const userId = req.userId!;
+
+    const existing = await prisma.like.findUnique({
+      where: { userId_tweetId: { userId, tweetId: id } },
+    });
+
+    if (!existing) {
+      res.status(404).json({ error: "Like introuvable" });
+      return;
+    }
+
+    await prisma.like.delete({
+      where: { id: existing.id },
+    });
+
+    const likesCount = await prisma.like.count({ where: { tweetId: id } });
+
+    res.json({ isLiked: false, likes: likesCount });
+  } catch (error) {
+    console.error("Unlike tweet error:", error);
     res.status(500).json({ error: "Erreur interne" });
   }
 }

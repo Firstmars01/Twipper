@@ -14,6 +14,7 @@ export interface Tweet {
   _count: {
     likes: number;
   };
+  isLiked: boolean;
 }
 
 // POST /api/tweets
@@ -70,4 +71,26 @@ export async function apiDeleteTweet(id: string): Promise<void> {
     const data = await res.json();
     throw new Error(data.error || "Erreur lors de la suppression");
   }
+}
+
+// POST /api/tweets/:id/like
+export async function apiLikeTweet(id: string): Promise<{ isLiked: boolean; likes: number }> {
+  const res = await fetchWithAuth(`${API_BASE}/tweets/${id}/like`, {
+    method: "POST",
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Erreur lors du like");
+  return data;
+}
+
+// DELETE /api/tweets/:id/like
+export async function apiUnlikeTweet(id: string): Promise<{ isLiked: boolean; likes: number }> {
+  const res = await fetchWithAuth(`${API_BASE}/tweets/${id}/like`, {
+    method: "DELETE",
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Erreur lors du unlike");
+  return data;
 }

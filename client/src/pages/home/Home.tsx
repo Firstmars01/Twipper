@@ -87,13 +87,21 @@ function Home() {
     setTweets((prev) => prev.filter((t) => t.id !== id));
   }
 
+  function handleLikeChanged(id: string, isLiked: boolean, likes: number) {
+    setTweets((prev) =>
+      prev.map((t) =>
+        t.id === id ? { ...t, isLiked, _count: { ...t._count, likes } } : t
+      )
+    );
+  }
+
   return (
     <Box className="home">
       <Heading size="lg" mb={4}>
-        Fil d'actualit\u00e9
+        Fil d'actualit
       </Heading>
 
-      {/* Formulaire de cr\u00e9ation de tweet */}
+      {/* Formulaire de tweet */}
       <Box className="tweet-form-card" mb={6}>
         <form onSubmit={handleSubmit}>
           <VStack align="stretch" gap={3}>
@@ -137,6 +145,7 @@ function Home() {
             currentUserId={currentUser?.id}
             onUpdated={handleUpdated}
             onDeleted={handleDeleted}
+            onLikeChanged={handleLikeChanged}
           />
         ))}
       </VStack>

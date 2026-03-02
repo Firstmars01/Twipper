@@ -115,6 +115,14 @@ function Profile() {
     }
   }
 
+  function handleLikeChanged(id: string, isLiked: boolean, likes: number) {
+    setTweets((prev) =>
+      prev.map((t) =>
+        t.id === id ? { ...t, isLiked, _count: { ...t._count, likes } } : t
+      )
+    );
+  }
+
   if (loading) {
     return (
       <Box className="profile-loading">
@@ -192,6 +200,7 @@ function Profile() {
                 currentUserId={currentUser?.id}
                 onUpdated={handleTweetUpdated}
                 onDeleted={handleTweetDeleted}
+                onLikeChanged={handleLikeChanged}
                 hideAuthorLink
               />
             ))}
