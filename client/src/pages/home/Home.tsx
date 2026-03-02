@@ -211,9 +211,9 @@ function Home() {
                 <Avatar.Fallback name={tweet.author.username} />
                 {tweet.author.avatar && <Avatar.Image src={tweet.author.avatar} />}
               </Avatar.Root>
-              <Box flex="1">
-                <HStack justify="space-between" mb={1}>
-                  <HStack gap={2}>
+              <Box flex="1" minW={0}>
+                <HStack justify="space-between" mb={1} flexWrap="wrap" gap={1}>
+                  <HStack gap={2} flexWrap="wrap">
                     <RouterLink to={`/profile/${tweet.author.username}`}>
                       <Text fontWeight="bold" fontSize="sm" _hover={{ textDecoration: "underline" }}>
                         @{tweet.author.username}
@@ -228,26 +228,6 @@ function Home() {
                       </Text>
                     )}
                   </HStack>
-                  {currentUser?.id === tweet.author.id && (
-                    <HStack gap={1}>
-                      <Button
-                        size="xs"
-                        variant="ghost"
-                        colorPalette="blue"
-                        onClick={() => startEdit(tweet)}
-                      >
-                        Modifier
-                      </Button>
-                      <Button
-                        size="xs"
-                        variant="ghost"
-                        colorPalette="red"
-                        onClick={() => handleDelete(tweet.id)}
-                      >
-                        Supprimer
-                      </Button>
-                    </HStack>
-                  )}
                 </HStack>
 
                 {editingId === tweet.id ? (
@@ -286,9 +266,32 @@ function Home() {
                     {tweet.content}
                   </Text>
                 )}
-                <Text fontSize="xs" color="gray.500" mt={1}>
-                  {tweet._count.likes} like{tweet._count.likes !== 1 ? "s" : ""}
-                </Text>
+
+                <HStack justify="space-between" mt={2}>
+                  <Text fontSize="xs" color="gray.500">
+                    {tweet._count.likes} like{tweet._count.likes !== 1 ? "s" : ""}
+                  </Text>
+                  {currentUser?.id === tweet.author.id && editingId !== tweet.id && (
+                    <HStack gap={1}>
+                      <Button
+                        size="xs"
+                        variant="ghost"
+                        colorPalette="blue"
+                        onClick={() => startEdit(tweet)}
+                      >
+                        Modifier
+                      </Button>
+                      <Button
+                        size="xs"
+                        variant="ghost"
+                        colorPalette="red"
+                        onClick={() => handleDelete(tweet.id)}
+                      >
+                        Supprimer
+                      </Button>
+                    </HStack>
+                  )}
+                </HStack>
               </Box>
             </HStack>
           </Box>
