@@ -106,7 +106,7 @@ function TweetCard({
   async function handleDelete() {
     try {
       await apiDeleteTweet(tweet.id);
-      toaster.create({ title: "Tweet supprimé", type: "success", duration: 3000 });
+      toaster.create({ title: "Tweet supprimé", type: "error", duration: 3000 });
       onDeleted?.(tweet.id);
     } catch (err: any) {
       toaster.create({
