@@ -261,22 +261,22 @@ function TweetCard({
           {/* Pied : likes + retweet + actions */}
           <div className="tweet-card-footer">
             <div className="tweet-card-footer-left">
-              <button
+              <Button
                 className={likeButtonClass}
                 onClick={handleToggleLike}
                 disabled={likeDisabled}
                 type="button"
               >
                 {liked ? <FaHeart /> : <FaRegHeart />} {likesCount}
-              </button>
-              <button
+              </Button>
+              <Button
                 className="tweet-card-retweet-btn"
                 onClick={handleRetweet}
                 disabled={retweetDisabled}
                 type="button"
               >
                 <FaRetweet /> <span className="tweet-card-btn-label"></span>
-              </button>
+              </Button>
             </div>
             {isOwner && !editing && (
               <div className="tweet-card-actions">
