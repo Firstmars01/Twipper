@@ -11,7 +11,7 @@ export { apiGetUserByUsername } from "./user";
 export { apiFollowUser, apiUnfollowUser, apiGetFollowers, apiGetFollowing } from "./follow";
 
 // Tweets
-export { apiCreateTweet, apiGetFeed, apiGetUserTweets, apiUpdateTweet, apiDeleteTweet, apiLikeTweet, apiUnlikeTweet } from "./tweet";
+export { apiCreateTweet, apiGetFeed, apiGetUserTweets, apiUpdateTweet, apiDeleteTweet, apiLikeTweet, apiUnlikeTweet, apiRetweetTweet, apiUnretweetTweet } from "./tweet";
 export type { Tweet } from "./tweet";
 
 // HTTP & helpers

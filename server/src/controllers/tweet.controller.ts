@@ -13,13 +13,32 @@ function tweetInclude(userId: string) {
       where: { userId },
       select: { id: true },
     },
+    retweetOf: {
+      include: {
+        author: {
+          select: { id: true, username: true, avatar: true },
+        },
+        _count: { select: { likes: true } },
+        likes: {
+          where: { userId },
+          select: { id: true },
+        },
+      },
+    },
   };
 }
 
 // Transforme le résultat Prisma pour ajouter isLiked et retirer le tableau likes
 function formatTweet(tweet: any) {
-  const { likes, ...rest } = tweet;
-  return { ...rest, isLiked: likes.length > 0 };
+  const { likes, retweetOf, ...rest } = tweet;
+  const formatted: any = { ...rest, isLiked: likes.length > 0 };
+  if (retweetOf) {
+    const { likes: rtLikes, ...rtRest } = retweetOf;
+    formatted.retweetOf = { ...rtRest, isLiked: rtLikes.length > 0 };
+  } else {
+    formatted.retweetOf = null;
+  }
+  return formatted;
 }
 
 // POST /api/tweets
@@ -213,6 +232,72 @@ export async function likeTweet(req: AuthRequest, res: Response) {
     res.json({ isLiked: true, likes: likesCount });
   } catch (error) {
     console.error("Like tweet error:", error);
+    res.status(500).json({ error: "Erreur interne" });
+  }
+}
+
+// POST /api/tweets/:id/retweet
+export async function retweetTweet(req: AuthRequest, res: Response) {
+  try {
+    const { id } = req.params;
+    const userId = req.userId!;
+
+    // Vérifier que le tweet original existe
+    const original = await prisma.tweet.findUnique({ where: { id } });
+    if (!original) {
+      res.status(404).json({ error: "Tweet introuvable" });
+      return;
+    }
+
+    // On ne peut pas retweeter un retweet, on retweete le tweet original
+    const targetId = original.retweetOfId || original.id;
+
+    // Vérifier si l'utilisateur a déjà retweeté ce tweet
+    const existing = await prisma.tweet.findFirst({
+      where: { authorId: userId, retweetOfId: targetId },
+    });
+    if (existing) {
+      res.status(409).json({ error: "Vous avez déjà retweeté ce tweet" });
+      return;
+    }
+
+    const retweet = await prisma.tweet.create({
+      data: {
+        content: "",
+        authorId: userId,
+        retweetOfId: targetId,
+      },
+      include: tweetInclude(userId),
+    });
+
+    res.status(201).json(formatTweet(retweet));
+  } catch (error) {
+    console.error("Retweet error:", error);
+    res.status(500).json({ error: "Erreur interne" });
+  }
+}
+
+// DELETE /api/tweets/:id/retweet
+export async function unretweetTweet(req: AuthRequest, res: Response) {
+  try {
+    const { id } = req.params;
+    const userId = req.userId!;
+
+    // Trouver le retweet de l'utilisateur pour ce tweet
+    const retweet = await prisma.tweet.findFirst({
+      where: { authorId: userId, retweetOfId: id },
+    });
+
+    if (!retweet) {
+      res.status(404).json({ error: "Retweet introuvable" });
+      return;
+    }
+
+    await prisma.tweet.delete({ where: { id: retweet.id } });
+
+    res.json({ message: "Retweet supprimé" });
+  } catch (error) {
+    console.error("Unretweet error:", error);
     res.status(500).json({ error: "Erreur interne" });
   }
 }

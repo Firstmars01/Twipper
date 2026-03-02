@@ -95,6 +95,10 @@ function Home() {
     );
   }
 
+  function handleRetweeted(retweet: Tweet) {
+    setTweets((prev) => [retweet, ...prev]);
+  }
+
   return (
     <Box className="home">
       <Heading size="lg" mb={4}>
@@ -146,6 +150,7 @@ function Home() {
             onUpdated={handleUpdated}
             onDeleted={handleDeleted}
             onLikeChanged={handleLikeChanged}
+            onRetweeted={handleRetweeted}
           />
         ))}
       </VStack>

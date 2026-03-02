@@ -123,6 +123,10 @@ function Profile() {
     );
   }
 
+  function handleRetweeted(retweet: Tweet) {
+    setTweets((prev) => [retweet, ...prev]);
+  }
+
   if (loading) {
     return (
       <Box className="profile-loading">
@@ -201,6 +205,7 @@ function Profile() {
                 onUpdated={handleTweetUpdated}
                 onDeleted={handleTweetDeleted}
                 onLikeChanged={handleLikeChanged}
+                onRetweeted={handleRetweeted}
                 hideAuthorLink
               />
             ))}

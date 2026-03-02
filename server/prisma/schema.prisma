@@ -37,9 +37,14 @@ model Tweet {
   updatedAt DateTime @updatedAt
 
   // Relations
-  authorId  String
-  author    User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  likes     Like[]
+  authorId    String
+  author      User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  likes       Like[]
+
+  // Retweet : si ce tweet est un retweet, référence le tweet original
+  retweetOfId String?
+  retweetOf   Tweet?  @relation("Retweet", fields: [retweetOfId], references: [id], onDelete: SetNull)
+  retweets    Tweet[] @relation("Retweet")
 
   @@map("tweets")
 }

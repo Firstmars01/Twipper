@@ -15,6 +15,22 @@ export interface Tweet {
     likes: number;
   };
   isLiked: boolean;
+  retweetOfId?: string | null;
+  retweetOf?: {
+    id: string;
+    content: string;
+    createdAt: string;
+    updatedAt: string;
+    author: {
+      id: string;
+      username: string;
+      avatar?: string;
+    };
+    _count: {
+      likes: number;
+    };
+    isLiked: boolean;
+  } | null;
 }
 
 // POST /api/tweets
@@ -93,4 +109,27 @@ export async function apiUnlikeTweet(id: string): Promise<{ isLiked: boolean; li
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || "Erreur lors du unlike");
   return data;
+}
+
+// POST /api/tweets/:id/retweet
+export async function apiRetweetTweet(id: string): Promise<Tweet> {
+  const res = await fetchWithAuth(`${API_BASE}/tweets/${id}/retweet`, {
+    method: "POST",
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Erreur lors du retweet");
+  return data;
+}
+
+// DELETE /api/tweets/:id/retweet
+export async function apiUnretweetTweet(id: string): Promise<void> {
+  const res = await fetchWithAuth(`${API_BASE}/tweets/${id}/retweet`, {
+    method: "DELETE",
+  });
+
+  if (!res.ok) {
+    const data = await res.json();
+    throw new Error(data.error || "Erreur lors de la suppression du retweet");
+  }
 }
