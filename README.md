@@ -64,8 +64,6 @@ Créer un fichier `.env` :
 
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/twipper"
-JWT_SECRET="votre_secret_jwt"
-REFRESH_SECRET="votre_secret_refresh"
 PORT=3001
 ```
 

@@ -1,6 +1,6 @@
-import { Box, Heading, Text, Spinner, Button, VStack, HStack, Textarea, Avatar } from "@chakra-ui/react";
-import { useParams, Link as RouterLink } from "react-router-dom";
-import { useEffect, useState, useCallback, useMemo, type FormEvent } from "react";
+import { Box, Heading, Text, Spinner, Button, VStack } from "@chakra-ui/react";
+import { useParams } from "react-router-dom";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import {
   apiGetUserByUsername,
   apiFollowUser,
@@ -8,15 +8,13 @@ import {
   apiGetFollowers,
   apiGetFollowing,
   apiGetUserTweets,
-  apiUpdateTweet,
-  apiDeleteTweet,
   getStoredUser,
   type AuthResponse,
 } from "../../service/api";
 import type { Tweet } from "../../service/api";
-import { toaster } from "../../utils/toaster";
 import Page404 from "../page404/Page404";
 import FollowListDialog, { type FollowUser } from "../../ui/follow-list-dialog/FollowListDialog";
+import TweetCard from "../../ui/tweet-card/TweetCard";
 import "./Style.css";
 
 type UserProfile = AuthResponse["user"] & {
@@ -45,9 +43,6 @@ function Profile() {
 
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [tweetsLoading, setTweetsLoading] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editContent, setEditContent] = useState("");
-  const [editLoading, setEditLoading] = useState(false);
 
   const currentUser = useMemo(() => getStoredUser(), []);
   const isOwnProfile = currentUser?.username === username;
@@ -109,60 +104,15 @@ function Profile() {
     [username]
   );
 
-  function startEdit(tweet: Tweet) {
-    setEditingId(tweet.id);
-    setEditContent(tweet.content);
+  function handleTweetUpdated(updated: Tweet) {
+    setTweets((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
   }
 
-  function cancelEdit() {
-    setEditingId(null);
-    setEditContent("");
-  }
-
-  async function handleUpdateTweet(e: FormEvent) {
-    e.preventDefault();
-    if (!editingId || !editContent.trim()) return;
-
-    if (editContent.length > 280) {
-      toaster.create({ title: "Tweet trop long", description: "280 caractères maximum", type: "error", duration: 4000 });
-      return;
+  function handleTweetDeleted(id: string) {
+    setTweets((prev) => prev.filter((t) => t.id !== id));
+    if (user) {
+      setUser({ ...user, _count: { ...user._count, tweets: user._count.tweets - 1 } });
     }
-
-    setEditLoading(true);
-    try {
-      const updated = await apiUpdateTweet(editingId, editContent);
-      setTweets((prev) => prev.map((t) => (t.id === editingId ? updated : t)));
-      setEditingId(null);
-      setEditContent("");
-      toaster.create({ title: "Tweet modifié !", type: "success", duration: 3000 });
-    } catch (err: any) {
-      toaster.create({ title: "Erreur", description: err.message, type: "error", duration: 4000 });
-    } finally {
-      setEditLoading(false);
-    }
-  }
-
-  async function handleDeleteTweet(id: string) {
-    try {
-      await apiDeleteTweet(id);
-      setTweets((prev) => prev.filter((t) => t.id !== id));
-      if (user) {
-        setUser({ ...user, _count: { ...user._count, tweets: user._count.tweets - 1 } });
-      }
-      toaster.create({ title: "Tweet supprimé", type: "success", duration: 3000 });
-    } catch (err: any) {
-      toaster.create({ title: "Erreur", description: err.message, type: "error", duration: 4000 });
-    }
-  }
-
-  function formatDate(dateStr: string) {
-    return new Date(dateStr).toLocaleString("fr-FR", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
   }
 
   if (loading) {
@@ -236,83 +186,14 @@ function Profile() {
         ) : (
           <VStack align="stretch" gap={3}>
             {tweets.map((tweet) => (
-              <Box key={tweet.id} className="profile-tweet-card">
-                <HStack justify="space-between" mb={1} flexWrap="wrap" gap={1}>
-                  <HStack gap={2} flexWrap="wrap">
-                    <Text fontWeight="bold" fontSize="sm">
-                      @{tweet.author.username}
-                    </Text>
-                    <Text fontSize="xs" color="gray.500">
-                      {tweet.updatedAt && tweet.updatedAt !== tweet.createdAt
-                        ? `modifié le ${formatDate(tweet.updatedAt)}`
-                        : formatDate(tweet.createdAt)}
-                    </Text>
-                  </HStack>
-                </HStack>
-
-                {editingId === tweet.id ? (
-                  <form onSubmit={handleUpdateTweet}>
-                    <VStack align="stretch" gap={2} mt={1}>
-                      <Textarea
-                        value={editContent}
-                        onChange={(e) => setEditContent(e.target.value)}
-                        maxLength={280}
-                        resize="none"
-                        rows={2}
-                        size="sm"
-                      />
-                      <HStack justify="space-between">
-                        <Text fontSize="xs" color={editContent.length > 260 ? "red.400" : "gray.500"}>
-                          {editContent.length}/280
-                        </Text>
-                        <HStack gap={2}>
-                          <Button size="xs" variant="ghost" onClick={cancelEdit}>
-                            Annuler
-                          </Button>
-                          <Button
-                            size="xs"
-                            colorPalette="blue"
-                            type="submit"
-                            disabled={editLoading || !editContent.trim()}
-                          >
-                            {editLoading ? "Envoi..." : "Enregistrer"}
-                          </Button>
-                        </HStack>
-                      </HStack>
-                    </VStack>
-                  </form>
-                ) : (
-                  <Text fontSize="sm" whiteSpace="pre-wrap">
-                    {tweet.content}
-                  </Text>
-                )}
-
-                <HStack justify="space-between" mt={2}>
-                  <Text fontSize="xs" color="gray.500">
-                    {tweet._count.likes} like{tweet._count.likes !== 1 ? "s" : ""}
-                  </Text>
-                  {currentUser?.id === tweet.author.id && editingId !== tweet.id && (
-                    <HStack gap={1}>
-                      <Button
-                        size="xs"
-                        variant="ghost"
-                        colorPalette="blue"
-                        onClick={() => startEdit(tweet)}
-                      >
-                        Modifier
-                      </Button>
-                      <Button
-                        size="xs"
-                        variant="ghost"
-                        colorPalette="red"
-                        onClick={() => handleDeleteTweet(tweet.id)}
-                      >
-                        Supprimer
-                      </Button>
-                    </HStack>
-                  )}
-                </HStack>
-              </Box>
+              <TweetCard
+                key={tweet.id}
+                tweet={tweet}
+                currentUserId={currentUser?.id}
+                onUpdated={handleTweetUpdated}
+                onDeleted={handleTweetDeleted}
+                hideAuthorLink
+              />
             ))}
           </VStack>
         )}

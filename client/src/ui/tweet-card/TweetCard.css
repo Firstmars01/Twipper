@@ -1,0 +1,88 @@
+.tweet-card {
+  background: var(--chakra-colors-bg, #fff);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  transition: box-shadow 0.2s;
+}
+
+.tweet-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.tweet-card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.tweet-card-info {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.tweet-card-author {
+  font-weight: bold;
+  font-size: 0.875rem;
+}
+
+.tweet-card-author:hover {
+  text-decoration: underline;
+}
+
+.tweet-card-date {
+  font-size: 0.75rem;
+  color: var(--chakra-colors-gray-500, #718096);
+}
+
+.tweet-card-content {
+  font-size: 0.875rem;
+  white-space: pre-wrap;
+}
+
+.tweet-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+.tweet-card-likes {
+  font-size: 0.75rem;
+  color: var(--chakra-colors-gray-500, #718096);
+}
+
+.tweet-card-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.tweet-card-edit-counter {
+  font-size: 0.75rem;
+}
+
+.tweet-card-edit-counter--warn {
+  color: var(--chakra-colors-red-400, #fc8181);
+}
+
+.tweet-card-edit-counter--normal {
+  color: var(--chakra-colors-gray-500, #718096);
+}
+
+.tweet-card-save-btn {
+  background-color: #2b6cb0;
+  color: white;
+}
+
+.tweet-card-save-btn:hover {
+  background-color: #2c5282;
+}
+
+.tweet-card-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

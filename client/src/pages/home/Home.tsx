@@ -7,27 +7,21 @@ import {
   Textarea,
   VStack,
   HStack,
-  Avatar,
 } from "@chakra-ui/react";
-import { Link as RouterLink } from "react-router-dom";
 import {
   apiCreateTweet,
   apiGetFeed,
-  apiUpdateTweet,
-  apiDeleteTweet,
   getStoredUser,
 } from "../../service/api";
 import type { Tweet } from "../../service/api";
 import { toaster } from "../../utils/toaster";
+import TweetCard from "../../ui/tweet-card/TweetCard";
 import "./Style.css";
 
 function Home() {
   const [content, setContent] = useState("");
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [loading, setLoading] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [editContent, setEditContent] = useState("");
-  const [editLoading, setEditLoading] = useState(false);
   const currentUser = getStoredUser();
 
   useEffect(() => {
@@ -56,7 +50,7 @@ function Home() {
     if (content.length > 280) {
       toaster.create({
         title: "Tweet trop long",
-        description: "280 caractères maximum",
+        description: "280 caract\u00e8res maximum",
         type: "error",
         duration: 4000,
       });
@@ -69,7 +63,7 @@ function Home() {
       setTweets((prev) => [tweet, ...prev]);
       setContent("");
       toaster.create({
-        title: "Tweet publié !",
+        title: "Tweet publi\u00e9 !",
         type: "success",
         duration: 3000,
       });
@@ -85,89 +79,21 @@ function Home() {
     }
   }
 
-  function startEdit(tweet: Tweet) {
-    setEditingId(tweet.id);
-    setEditContent(tweet.content);
+  function handleUpdated(updated: Tweet) {
+    setTweets((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
   }
 
-  function cancelEdit() {
-    setEditingId(null);
-    setEditContent("");
-  }
-
-  async function handleUpdate(e: FormEvent) {
-    e.preventDefault();
-    if (!editingId || !editContent.trim()) return;
-
-    if (editContent.length > 280) {
-      toaster.create({
-        title: "Tweet trop long",
-        description: "280 caractères maximum",
-        type: "error",
-        duration: 4000,
-      });
-      return;
-    }
-
-    setEditLoading(true);
-    try {
-      const updated = await apiUpdateTweet(editingId, editContent);
-      setTweets((prev) => prev.map((t) => (t.id === editingId ? updated : t)));
-      setEditingId(null);
-      setEditContent("");
-      toaster.create({
-        title: "Tweet modifié !",
-        type: "success",
-        duration: 3000,
-      });
-    } catch (err: any) {
-      toaster.create({
-        title: "Erreur",
-        description: err.message,
-        type: "error",
-        duration: 4000,
-      });
-    } finally {
-      setEditLoading(false);
-    }
-  }
-
-  async function handleDelete(id: string) {
-    try {
-      await apiDeleteTweet(id);
-      setTweets((prev) => prev.filter((t) => t.id !== id));
-      toaster.create({
-        title: "Tweet supprimé",
-        type: "success",
-        duration: 3000,
-      });
-    } catch (err: any) {
-      toaster.create({
-        title: "Erreur",
-        description: err.message,
-        type: "error",
-        duration: 4000,
-      });
-    }
-  }
-
-  function formatDate(dateStr: string) {
-    return new Date(dateStr).toLocaleString("fr-FR", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+  function handleDeleted(id: string) {
+    setTweets((prev) => prev.filter((t) => t.id !== id));
   }
 
   return (
     <Box className="home">
       <Heading size="lg" mb={4}>
-        Fil d'actualité
+        Fil d'actualit\u00e9
       </Heading>
 
-      {/* Formulaire de création de tweet */}
+      {/* Formulaire de cr\u00e9ation de tweet */}
       <Box className="tweet-form-card" mb={6}>
         <form onSubmit={handleSubmit}>
           <VStack align="stretch" gap={3}>
@@ -205,93 +131,13 @@ function Home() {
         )}
 
         {tweets.map((tweet) => (
-          <Box key={tweet.id} className="tweet-card">
-            <HStack align="start" gap={3}>
-              <Avatar.Root size="sm">
-                <Avatar.Fallback name={tweet.author.username} />
-                {tweet.author.avatar && <Avatar.Image src={tweet.author.avatar} />}
-              </Avatar.Root>
-              <Box flex="1" minW={0}>
-                <HStack justify="space-between" mb={1} flexWrap="wrap" gap={1}>
-                  <HStack gap={2} flexWrap="wrap">
-                    <RouterLink to={`/profile/${tweet.author.username}`}>
-                      <Text fontWeight="bold" fontSize="sm" _hover={{ textDecoration: "underline" }}>
-                        @{tweet.author.username}
-                      </Text>
-                    </RouterLink>
-                    <Text fontSize="xs" color="gray.500">
-                      {tweet.updatedAt && tweet.updatedAt !== tweet.createdAt
-                        ? `modifié le ${formatDate(tweet.updatedAt)}`
-                        : formatDate(tweet.createdAt)}
-                    </Text>
-                  </HStack>
-                </HStack>
-
-                {editingId === tweet.id ? (
-                  <form onSubmit={handleUpdate}>
-                    <VStack align="stretch" gap={2} mt={1}>
-                      <Textarea
-                        value={editContent}
-                        onChange={(e) => setEditContent(e.target.value)}
-                        maxLength={280}
-                        resize="none"
-                        rows={2}
-                        size="sm"
-                      />
-                      <HStack justify="space-between">
-                        <Text fontSize="xs" color={editContent.length > 260 ? "red.400" : "gray.500"}>
-                          {editContent.length}/280
-                        </Text>
-                        <HStack gap={2}>
-                          <Button size="xs" variant="ghost" onClick={cancelEdit}>
-                            Annuler
-                          </Button>
-                          <Button
-                            size="xs"
-                            className="home-btn"
-                            type="submit"
-                            disabled={editLoading || !editContent.trim()}
-                          >
-                            {editLoading ? "Envoi..." : "Enregistrer"}
-                          </Button>
-                        </HStack>
-                      </HStack>
-                    </VStack>
-                  </form>
-                ) : (
-                  <Text fontSize="sm" whiteSpace="pre-wrap">
-                    {tweet.content}
-                  </Text>
-                )}
-
-                <HStack justify="space-between" mt={2}>
-                  <Text fontSize="xs" color="gray.500">
-                    {tweet._count.likes} like{tweet._count.likes !== 1 ? "s" : ""}
-                  </Text>
-                  {currentUser?.id === tweet.author.id && editingId !== tweet.id && (
-                    <HStack gap={1}>
-                      <Button
-                        size="xs"
-                        variant="ghost"
-                        colorPalette="blue"
-                        onClick={() => startEdit(tweet)}
-                      >
-                        Modifier
-                      </Button>
-                      <Button
-                        size="xs"
-                        variant="ghost"
-                        colorPalette="red"
-                        onClick={() => handleDelete(tweet.id)}
-                      >
-                        Supprimer
-                      </Button>
-                    </HStack>
-                  )}
-                </HStack>
-              </Box>
-            </HStack>
-          </Box>
+          <TweetCard
+            key={tweet.id}
+            tweet={tweet}
+            currentUserId={currentUser?.id}
+            onUpdated={handleUpdated}
+            onDeleted={handleDeleted}
+          />
         ))}
       </VStack>
     </Box>

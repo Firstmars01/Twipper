@@ -29,31 +29,14 @@
   padding: 1rem;
 }
 
-.tweet-card {
-  background: var(--chakra-colors-bg);
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
-  padding: 1rem;
-  transition: box-shadow 0.2s;
-}
-
-.tweet-card:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
 /* --- Responsive mobile --- */
 @media (max-width: 480px) {
   .home {
     padding: 1rem 0.75rem;
   }
 
-  .tweet-form-card,
-  .tweet-card {
+  .tweet-form-card {
     border-radius: 8px;
     padding: 0.75rem;
-  }
-
-  .tweet-card :global(.chakra-stack[data-orientation="horizontal"]) {
-    flex-wrap: wrap;
   }
 }
