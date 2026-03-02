@@ -10,6 +10,10 @@ export { apiGetUserByUsername } from "./user";
 // Follow
 export { apiFollowUser, apiUnfollowUser, apiGetFollowers, apiGetFollowing } from "./follow";
 
+// Tweets
+export { apiCreateTweet, apiGetFeed, apiUpdateTweet, apiDeleteTweet } from "./tweet";
+export type { Tweet } from "./tweet";
+
 // HTTP & helpers
 export {
   saveAuth,

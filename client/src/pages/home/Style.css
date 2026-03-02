@@ -1,13 +1,39 @@
 .home {
   padding: 2rem;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .home-btn {
-  margin-top: 1rem;
-  background-color: #2b6cb0 ;
-  color: white ;
+  margin-top: 0;
+  background-color: #2b6cb0;
+  color: white;
 }
 
 .home-btn:hover {
-  background-color: #2c5282 ;
+  background-color: #2c5282;
+}
+
+.home-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tweet-form-card {
+  background: var(--chakra-colors-bg);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+}
+
+.tweet-card {
+  background: var(--chakra-colors-bg);
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1rem;
+  transition: box-shadow 0.2s;
+}
+
+.tweet-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
