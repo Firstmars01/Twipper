@@ -1,5 +1,8 @@
 import { Router } from "express";
-import { createTweet, getFeed, getGlobalFeed, getUserTweets, updateTweet, deleteTweet, likeTweet, unlikeTweet, retweetTweet, unretweetTweet } from "../controllers/tweet.controller";
+import { createTweet, updateTweet, deleteTweet } from "../controllers/tweet.controller";
+import { getFeed, getGlobalFeed, getUserTweets } from "../controllers/feed.controller";
+import { likeTweet, unlikeTweet } from "../controllers/like.controller";
+import { retweetTweet, unretweetTweet } from "../controllers/retweet.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 
 export const tweetRouter = Router();
