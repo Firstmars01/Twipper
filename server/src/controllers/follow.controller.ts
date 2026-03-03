@@ -1,15 +1,15 @@
 import { Response } from "express";
 import prisma from "../lib/prisma";
 import { AuthRequest } from "../middleware/auth.middleware";
+import { findUserByUsername, USER_PUBLIC_SELECT } from "../helpers/user.helper";
+import { findExistingFollow, createFollow, deleteFollow } from "../helpers/follow.helper";
 
 // POST /api/users/:username/follow
 export async function followUser(req: AuthRequest, res: Response) {
   try {
     const currentUserId = req.userId!;
-    const { username } = req.params;
-
-    // Trouver l'utilisateur cible
-    const target = await prisma.user.findUnique({ where: { username } });
+    const username = req.params.username as string;
+    const target = await findUserByUsername(username);
 
     if (!target) {
       res.status(404).json({ error: "Utilisateur introuvable" });
@@ -21,28 +21,12 @@ export async function followUser(req: AuthRequest, res: Response) {
       return;
     }
 
-    // Vérifier si déjà follow
-    const existing = await prisma.follow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId: currentUserId,
-          followingId: target.id,
-        },
-      },
-    });
-
-    if (existing) {
+    if (await findExistingFollow(currentUserId, target.id)) {
       res.status(409).json({ error: "Vous suivez déjà cet utilisateur" });
       return;
     }
 
-    await prisma.follow.create({
-      data: {
-        followerId: currentUserId,
-        followingId: target.id,
-      },
-    });
-
+    await createFollow(currentUserId, target.id);
     res.status(201).json({ message: "Utilisateur suivi avec succès" });
   } catch (error) {
     console.error("Follow error:", error);
@@ -54,38 +38,20 @@ export async function followUser(req: AuthRequest, res: Response) {
 export async function unfollowUser(req: AuthRequest, res: Response) {
   try {
     const currentUserId = req.userId!;
-    const { username } = req.params;
-
-    const target = await prisma.user.findUnique({ where: { username } });
+    const username = req.params.username as string;
+    const target = await findUserByUsername(username);
 
     if (!target) {
       res.status(404).json({ error: "Utilisateur introuvable" });
       return;
     }
 
-    const existing = await prisma.follow.findUnique({
-      where: {
-        followerId_followingId: {
-          followerId: currentUserId,
-          followingId: target.id,
-        },
-      },
-    });
-
-    if (!existing) {
+    if (!(await findExistingFollow(currentUserId, target.id))) {
       res.status(404).json({ error: "Vous ne suivez pas cet utilisateur" });
       return;
     }
 
-    await prisma.follow.delete({
-      where: {
-        followerId_followingId: {
-          followerId: currentUserId,
-          followingId: target.id,
-        },
-      },
-    });
-
+    await deleteFollow(currentUserId, target.id);
     res.json({ message: "Vous ne suivez plus cet utilisateur" });
   } catch (error) {
     console.error("Unfollow error:", error);
@@ -96,9 +62,8 @@ export async function unfollowUser(req: AuthRequest, res: Response) {
 // GET /api/users/:username/followers
 export async function getFollowers(req: AuthRequest, res: Response) {
   try {
-    const { username } = req.params;
-
-    const user = await prisma.user.findUnique({ where: { username } });
+    const username = req.params.username as string;
+    const user = await findUserByUsername(username);
 
     if (!user) {
       res.status(404).json({ error: "Utilisateur introuvable" });
@@ -107,16 +72,7 @@ export async function getFollowers(req: AuthRequest, res: Response) {
 
     const followers = await prisma.follow.findMany({
       where: { followingId: user.id },
-      include: {
-        follower: {
-          select: {
-            id: true,
-            username: true,
-            bio: true,
-            avatar: true,
-          },
-        },
-      },
+      include: { follower: { select: USER_PUBLIC_SELECT } },
       orderBy: { createdAt: "desc" },
     });
 
@@ -130,9 +86,8 @@ export async function getFollowers(req: AuthRequest, res: Response) {
 // GET /api/users/:username/following
 export async function getFollowing(req: AuthRequest, res: Response) {
   try {
-    const { username } = req.params;
-
-    const user = await prisma.user.findUnique({ where: { username } });
+    const username = req.params.username as string;
+    const user = await findUserByUsername(username);
 
     if (!user) {
       res.status(404).json({ error: "Utilisateur introuvable" });
@@ -141,16 +96,7 @@ export async function getFollowing(req: AuthRequest, res: Response) {
 
     const following = await prisma.follow.findMany({
       where: { followerId: user.id },
-      include: {
-        following: {
-          select: {
-            id: true,
-            username: true,
-            bio: true,
-            avatar: true,
-          },
-        },
-      },
+      include: { following: { select: USER_PUBLIC_SELECT } },
       orderBy: { createdAt: "desc" },
     });
 
