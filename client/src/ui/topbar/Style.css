@@ -15,6 +15,14 @@
   justify-content: space-between;
 }
 
+.topbar-logo {
+  height: 28px;
+  width: auto;
+  object-fit: contain;
+  vertical-align: middle;
+  display: inline;
+}
+
 .topbar-title {
   font-size: 1.25rem;
   font-weight: bold;

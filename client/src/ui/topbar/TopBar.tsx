@@ -18,7 +18,7 @@ function TopBar() {
       <Flex className="topbar-inner">
         <RouterLink to="/">
           <Heading className="topbar-title">
-            🐦 Twipper
+            <img src="/oiseau.webp" alt="Twipper" className="topbar-logo" /> Twipper
           </Heading>
         </RouterLink>
 
