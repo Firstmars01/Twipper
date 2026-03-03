@@ -55,6 +55,15 @@ export async function apiGetFeed(page = 1, limit = 20): Promise<Tweet[]> {
   return data;
 }
 
+// GET /api/tweets/global
+export async function apiGetGlobalFeed(page = 1, limit = 20): Promise<Tweet[]> {
+  const res = await fetchWithAuth(`${API_BASE}/tweets/global?page=${page}&limit=${limit}`);
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Erreur lors du chargement du fil global");
+  return data;
+}
+
 // GET /api/tweets/user/:username
 export async function apiGetUserTweets(username: string, page = 1, limit = 20): Promise<Tweet[]> {
   const res = await fetchWithAuth(`${API_BASE}/tweets/user/${username}?page=${page}&limit=${limit}`);

@@ -105,6 +105,28 @@ export async function getFeed(req: AuthRequest, res: Response) {
   }
 }
 
+// GET /api/tweets/global
+export async function getGlobalFeed(req: AuthRequest, res: Response) {
+  try {
+    const userId = req.userId!;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 20;
+    const skip = (page - 1) * limit;
+
+    const tweets = await prisma.tweet.findMany({
+      include: tweetInclude(userId),
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    });
+
+    res.json(tweets.map(formatTweet));
+  } catch (error) {
+    console.error("Get global feed error:", error);
+    res.status(500).json({ error: "Erreur interne" });
+  }
+}
+
 // GET /api/tweets/user/:username
 export async function getUserTweets(req: AuthRequest, res: Response) {
   try {

@@ -1,4 +1,4 @@
-import { useState, useEffect, type FormEvent } from "react";
+import { useState, useEffect, useCallback, type FormEvent } from "react";
 import {
   Box,
   Heading,
@@ -11,6 +11,7 @@ import {
 import {
   apiCreateTweet,
   apiGetFeed,
+  apiGetGlobalFeed,
   getStoredUser,
 } from "../../service/api";
 import type { Tweet } from "../../service/api";
@@ -18,19 +19,31 @@ import { toaster } from "../../utils/toaster";
 import TweetCard from "../../ui/tweet-card/TweetCard";
 import "./Style.css";
 
+type FeedTab = "suivis" | "tendances" | "global";
+
 function Home() {
   const [content, setContent] = useState("");
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<FeedTab>("suivis");
   const currentUser = getStoredUser();
 
-  useEffect(() => {
-    loadFeed();
-  }, []);
-
-  async function loadFeed() {
+  const loadFeed = useCallback(async (tab: FeedTab) => {
     try {
-      const data = await apiGetFeed();
+      let data: Tweet[];
+      switch (tab) {
+        case "global":
+          data = await apiGetGlobalFeed();
+          break;
+        case "tendances":
+          // TODO : implémenter le endpoint tendances
+          data = [];
+          break;
+        case "suivis":
+        default:
+          data = await apiGetFeed();
+          break;
+      }
       setTweets(data);
     } catch (err: any) {
       toaster.create({
@@ -40,6 +53,15 @@ function Home() {
         duration: 4000,
       });
     }
+  }, []);
+
+  useEffect(() => {
+    loadFeed(activeTab);
+  }, [activeTab, loadFeed]);
+
+  function handleTabChange(tab: FeedTab) {
+    if (tab === activeTab) return;
+    setActiveTab(tab);
   }
 
   async function handleSubmit(e: FormEvent) {
@@ -105,6 +127,8 @@ function Home() {
         Fil d'actualit
       </Heading>
 
+    
+
       {/* Formulaire de tweet */}
       <Box className="tweet-form-card" mb={6}>
         <form onSubmit={handleSubmit}>
@@ -134,11 +158,38 @@ function Home() {
         </form>
       </Box>
 
+      {/* Onglets de navigation */}
+      <div className="home-tabs">
+        <button
+          className={`home-tab ${activeTab === "suivis" ? "home-tab--active" : ""}`}
+          onClick={() => handleTabChange("suivis")}
+          type="button"
+        >
+          Suivis
+        </button>
+        <button
+          className={`home-tab ${activeTab === "tendances" ? "home-tab--active" : ""}`}
+          onClick={() => handleTabChange("tendances")}
+          type="button"
+        >
+          Tendances
+        </button>
+        <button
+          className={`home-tab ${activeTab === "global" ? "home-tab--active" : ""}`}
+          onClick={() => handleTabChange("global")}
+          type="button"
+        >
+          Global
+        </button>
+      </div>
+
       {/* Liste des tweets */}
       <VStack align="stretch" gap={4}>
         {tweets.length === 0 && (
           <Text color="gray.500" textAlign="center">
-            Aucun tweet pour le moment. Publiez le premier !
+            {activeTab === "tendances"
+              ? "Les tendances arrivent bientôt !"
+              : "Aucun tweet pour le moment. Publiez le premier !"}
           </Text>
         )}
 

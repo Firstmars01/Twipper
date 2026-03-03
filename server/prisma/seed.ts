@@ -78,7 +78,7 @@ async function main() {
       },
     });
     createdUsers.push(user);
-    console.log(`  ✅ User: @${user.username} (${user.email})`);
+    console.log(`User: @${user.username} (${user.email})`);
   }
 
   // Créer des tweets (3-5 par user)
@@ -97,7 +97,7 @@ async function main() {
       });
       allTweets.push(tweet);
     }
-    console.log(`  📝 ${count} tweets pour @${user.username}`);
+    console.log(`${count} tweets pour @${user.username}`);
   }
 
   // Créer des likes aléatoires
@@ -117,7 +117,7 @@ async function main() {
       likeCount++;
     }
   }
-  console.log(`  ❤️  ${likeCount} likes créés`);
+  console.log(`${likeCount} likes créés`);
 
   // Créer des follows aléatoires (chaque user follow 2-5 autres)
   let followCount = 0;
@@ -160,7 +160,7 @@ async function main() {
       retweetCount++;
     }
   }
-  console.log(`  🔁 ${retweetCount} retweets créés`);
+  console.log(`${retweetCount} retweets créés`);
 
   console.log("\n✨ Seed terminé !");
   console.log("   Mot de passe pour tous les comptes : test1234");
@@ -168,7 +168,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error("❌ Erreur seed:", e);
+    console.error("Erreur seed:", e);
     process.exit(1);
   })
   .finally(() => prisma.$disconnect());

@@ -29,6 +29,45 @@
   padding: 1rem;
 }
 
+/* Onglets feed */
+.home-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1.25rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.home-tab {
+  flex: 1;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--chakra-colors-gray-500, #718096);
+  transition: background 0.2s, color 0.2s;
+}
+
+.home-tab:not(:last-child) {
+  border-right: 1px solid #e2e8f0;
+}
+
+.home-tab:hover {
+  background: #edf2f7;
+}
+
+.home-tab--active {
+  background: #2b6cb0;
+  color: white;
+}
+
+.home-tab--active:hover {
+  background: #2c5282;
+}
+
 /* --- Responsive mobile --- */
 @media (max-width: 480px) {
   .home {
