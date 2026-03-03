@@ -31,7 +31,7 @@ app.use(errorHandler);
 
 // --- Start ---
 app.listen(PORT, () => {
-  console.log(`🚀 Twipper API running on http://localhost:${PORT}`);
+  console.log(`Twipper API running on http://localhost:${PORT}`);
 });
 
 export default app;

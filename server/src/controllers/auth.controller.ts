@@ -1,10 +1,17 @@
 import { Request, Response } from "express";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma";
+import { hashPassword, comparePassword } from "../utils/password";
+import { generateTokenPair, verifyRefreshToken } from "../utils/jwt";
 
-const JWT_SECRET = process.env.JWT_SECRET || "default_secret";
-const REFRESH_SECRET = process.env.REFRESH_SECRET || "default_refresh_secret";
+/** Sélection commune pour les réponses user */
+const USER_PUBLIC_SELECT = {
+  id: true,
+  email: true,
+  username: true,
+  bio: true,
+  avatar: true,
+  createdAt: true,
+} as const;
 
 // POST /api/auth/register
 export async function register(req: Request, res: Response) {
@@ -16,7 +23,6 @@ export async function register(req: Request, res: Response) {
       return;
     }
 
-    // Vérifier si l'utilisateur existe déjà
     const existing = await prisma.user.findFirst({
       where: { OR: [{ email }, { username }] },
     });
@@ -26,24 +32,16 @@ export async function register(req: Request, res: Response) {
       return;
     }
 
-    // Hash du mot de passe
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await hashPassword(password);
 
-    // Création de l'utilisateur
     const user = await prisma.user.create({
       data: { email, username, password: hashedPassword },
       select: { id: true, email: true, username: true, createdAt: true },
     });
 
-    // Génération des tokens
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
-      expiresIn: "15m",
-    });
-    const refreshToken = jwt.sign({ userId: user.id }, REFRESH_SECRET, {
-      expiresIn: "30d",
-    });
+    const tokens = generateTokenPair(user.id);
 
-    res.status(201).json({ user, token, refreshToken });
+    res.status(201).json({ user, ...tokens });
   } catch (error) {
     console.error("Register error:", error);
     res.status(500).json({ error: "Erreur interne" });
@@ -60,31 +58,14 @@ export async function login(req: Request, res: Response) {
       return;
     }
 
-    // Trouver l'utilisateur
     const user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user) {
+    if (!user || !(await comparePassword(password, user.password))) {
       res.status(401).json({ error: "Identifiants invalides" });
       return;
     }
 
-    // Vérifier le mot de passe
-    const valid = await bcrypt.compare(password, user.password);
-
-    if (!valid) {
-      res.status(401).json({ error: "Identifiants invalides" });
-      return;
-    }
-
-    // Génération du token
-    const token = jwt.sign({ userId: user.id }, JWT_SECRET, {
-      expiresIn: "15m",
-    });
-
-    // Génération du refresh token
-    const refreshToken = jwt.sign({ userId: user.id }, REFRESH_SECRET, {
-      expiresIn: "30d",
-    });
+    const tokens = generateTokenPair(user.id);
 
     res.json({
       user: {
@@ -94,8 +75,7 @@ export async function login(req: Request, res: Response) {
         bio: user.bio,
         avatar: user.avatar,
       },
-      token,
-      refreshToken,
+      ...tokens,
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -111,12 +91,7 @@ export async function getMe(req: Request, res: Response) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        id: true,
-        email: true,
-        username: true,
-        bio: true,
-        avatar: true,
-        createdAt: true,
+        ...USER_PUBLIC_SELECT,
         _count: { select: { tweets: true, followers: true, following: true } },
       },
     });
@@ -143,25 +118,17 @@ export async function refreshToken(req: Request, res: Response) {
       return;
     }
 
-    // Vérifier le refresh token
     let decoded: { userId: string };
     try {
-      decoded = jwt.verify(refreshToken, REFRESH_SECRET) as { userId: string };
+      decoded = verifyRefreshToken(refreshToken);
     } catch {
       res.status(401).json({ error: "Refresh token invalide ou expiré" });
       return;
     }
 
-    // Vérifier que l'utilisateur existe toujours
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      select: {
-        id: true,
-        email: true,
-        username: true,
-        bio: true,
-        avatar: true,
-      },
+      select: { id: true, email: true, username: true, bio: true, avatar: true },
     });
 
     if (!user) {
@@ -169,15 +136,9 @@ export async function refreshToken(req: Request, res: Response) {
       return;
     }
 
-    // Générer un nouveau access token + refresh token
-    const newToken = jwt.sign({ userId: user.id }, JWT_SECRET, {
-      expiresIn: "15m",
-    });
-    const newRefreshToken = jwt.sign({ userId: user.id }, REFRESH_SECRET, {
-      expiresIn: "30d",
-    });
+    const tokens = generateTokenPair(user.id);
 
-    res.json({ user, token: newToken, refreshToken: newRefreshToken });
+    res.json({ user, ...tokens });
   } catch (error) {
     console.error("Refresh error:", error);
     res.status(500).json({ error: "Erreur interne" });
