@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma";
+import type { AuthRequest } from "../middleware/auth.middleware";
 
 // GET /api/users/:username
 export async function getUserByUsername(req: Request, res: Response) {
@@ -53,4 +54,59 @@ export async function getUserByUsername(req: Request, res: Response) {
   }
 
   res.json({ user: { ...user, isFollowing } });
+}
+
+// PUT /api/users/me — update own profile (username, bio)
+export async function updateProfile(req: AuthRequest, res: Response) {
+  const userId = req.userId!;
+  const { username, bio } = req.body;
+
+  // Validation basique
+  if (username !== undefined) {
+    if (typeof username !== "string" || username.trim().length < 3) {
+      res.status(400).json({ error: "Le nom d'utilisateur doit contenir au moins 3 caractères" });
+      return;
+    }
+    if (username.trim().length > 20) {
+      res.status(400).json({ error: "Le nom d'utilisateur ne doit pas dépasser 20 caractères" });
+      return;
+    }
+    if (!/^[a-zA-Z0-9_]+$/.test(username.trim())) {
+      res.status(400).json({ error: "Le nom d'utilisateur ne peut contenir que des lettres, chiffres et underscores" });
+      return;
+    }
+  }
+
+  if (bio !== undefined && typeof bio !== "string") {
+    res.status(400).json({ error: "La bio doit être une chaîne de caractères" });
+    return;
+  }
+
+  // Vérifier unicité du username si modifié
+  if (username !== undefined) {
+    const existing = await prisma.user.findUnique({ where: { username: username.trim() } });
+    if (existing && existing.id !== userId) {
+      res.status(409).json({ error: "Ce nom d'utilisateur est déjà pris" });
+      return;
+    }
+  }
+
+  const data: Record<string, string | null> = {};
+  if (username !== undefined) data.username = username.trim();
+  if (bio !== undefined) data.bio = bio.trim() || null;
+
+  const updated = await prisma.user.update({
+    where: { id: userId },
+    select: {
+      id: true,
+      username: true,
+      email: true,
+      bio: true,
+      avatar: true,
+      createdAt: true,
+    },
+  data,
+  });
+
+  res.json({ user: updated });
 }

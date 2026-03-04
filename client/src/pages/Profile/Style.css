@@ -130,3 +130,77 @@
   justify-content: center;
   padding: 4rem;
 }
+
+/* ── Edit profile button ── */
+.edit-profile-btn {
+  background: #fff;
+  color: #1da1f2;
+  border: 2px solid #1da1f2;
+  border-radius: 999px;
+  padding: 0.4rem 1.4rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.edit-profile-btn:hover {
+  background: #e8f5fd;
+}
+
+/* ── Profile edit form ── */
+.profile-edit-form {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f7fafc;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+}
+
+.profile-edit-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #4a5568;
+  margin-bottom: 0.25rem;
+}
+
+.profile-edit-input {
+  border-radius: 8px !important;
+  border: 1px solid #e2e8f0 !important;
+  background: #fff !important;
+}
+
+.profile-edit-input:focus-within {
+  border-color: #1da1f2 !important;
+  box-shadow: 0 0 0 1px #1da1f2 !important;
+}
+
+.profile-edit-counter {
+  font-size: 0.75rem;
+  color: #a0aec0;
+  text-align: right;
+  margin-top: 0.25rem;
+}
+
+.profile-edit-error {
+  color: #e53e3e;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.profile-edit-save-btn {
+  background: linear-gradient(135deg, #1da1f2, #0d8ecf) !important;
+  color: #fff !important;
+  border-radius: 999px !important;
+  font-weight: 600;
+  padding: 0.4rem 1.2rem;
+}
+
+.profile-edit-save-btn:hover {
+  box-shadow: 0 2px 8px rgba(29, 161, 242, 0.4);
+}
+
+.profile-edit-save-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

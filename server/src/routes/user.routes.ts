@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getUserByUsername } from "../controllers/user.controller";
+import { getUserByUsername, updateProfile } from "../controllers/user.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 import {
   followUser,
@@ -10,6 +10,7 @@ import {
 
 export const userRouter = Router();
 
+userRouter.put("/me", authMiddleware, updateProfile);
 userRouter.get("/:username", getUserByUsername);
 userRouter.get("/:username/followers", getFollowers);
 userRouter.get("/:username/following", getFollowing);

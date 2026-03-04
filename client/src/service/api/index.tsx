@@ -5,7 +5,7 @@ export type { AuthResponse, ApiError } from "./types";
 export { apiRegister, apiLogin, apiGetMe } from "./auth";
 
 // Users
-export { apiGetUserByUsername } from "./user";
+export { apiGetUserByUsername, apiUpdateProfile } from "./user";
 
 // Follow
 export { apiFollowUser, apiUnfollowUser, apiGetFollowers, apiGetFollowing } from "./follow";

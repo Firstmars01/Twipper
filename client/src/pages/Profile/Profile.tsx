@@ -1,5 +1,5 @@
 import { Box, Heading, Text, Spinner, Button, VStack } from "@chakra-ui/react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import {
   apiGetUserByUsername,
@@ -15,6 +15,7 @@ import type { Tweet } from "../../service/api";
 import Page404 from "../page404/Page404";
 import FollowListDialog, { type FollowUser } from "../../ui/follow-list-dialog/FollowListDialog";
 import TweetCard from "../../ui/tweet-card/TweetCard";
+import ProfileEditForm from "../../ui/profile-edit-form/ProfileEditForm";
 import "./Style.css";
 
 type UserProfile = AuthResponse["user"] & {
@@ -43,7 +44,9 @@ function Profile() {
 
   const [tweets, setTweets] = useState<Tweet[]>([]);
   const [tweetsLoading, setTweetsLoading] = useState(false);
+  const [editing, setEditing] = useState(false);
 
+  const navigate = useNavigate();
   const currentUser = useMemo(() => getStoredUser(), []);
   const isOwnProfile = currentUser?.username === username;
   const dialogTitle = DIALOG_CONFIG[dialogKind].title;
@@ -127,6 +130,15 @@ function Profile() {
     setTweets((prev) => [retweet, ...prev]);
   }
 
+  function handleProfileSaved(updated: { username: string; bio?: string }) {
+    setEditing(false);
+    setUser((prev) => prev ? { ...prev, username: updated.username, bio: updated.bio } : prev);
+    // Si le username a changé, naviguer vers la nouvelle URL
+    if (updated.username !== username) {
+      navigate(`/profile/${updated.username}`, { replace: true });
+    }
+  }
+
   if (loading) {
     return (
       <Box className="profile-loading">
@@ -149,7 +161,15 @@ function Profile() {
             <Heading className="profile-title">@{user.username}</Heading>
             <Text className="profile-subtitle">{user.bio || "Aucune bio"}</Text>
           </Box>
-          {!isOwnProfile && currentUser && (
+          {isOwnProfile ? (
+            <Button
+              className="edit-profile-btn"
+              onClick={() => setEditing(true)}
+              size="sm"
+            >
+              Modifier le profil
+            </Button>
+          ) : currentUser ? (
             <Button
               className={`follow-btn ${user.isFollowing ? "following" : ""}`}
               onClick={handleFollow}
@@ -158,8 +178,17 @@ function Profile() {
             >
               {followLoading ? "..." : user.isFollowing ? "Abonné" : "Suivre"}
             </Button>
-          )}
+          ) : null}
         </Box>
+
+        {editing && (
+          <ProfileEditForm
+            currentUsername={user.username}
+            currentBio={user.bio || ""}
+            onSaved={handleProfileSaved}
+            onCancel={() => setEditing(false)}
+          />
+        )}
 
         <Box className="profile-stats">
           <Text><strong>{user._count.tweets}</strong> tweets</Text>

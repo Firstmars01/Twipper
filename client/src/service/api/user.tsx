@@ -19,3 +19,16 @@ export async function apiGetUserByUsername(username: string) {
     isFollowing: boolean;
   };
 }
+
+// PUT /api/users/me
+export async function apiUpdateProfile(body: { username?: string; bio?: string }): Promise<AuthResponse["user"]> {
+  const res = await fetchWithAuth(`${API_BASE}/users/me`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data?.error || "Erreur lors de la mise à jour du profil");
+  return data.user;
+}
