@@ -86,10 +86,26 @@ function NotificationBell() {
   }
 
   function handleNotifClick(notif: NotifType) {
-    if (notif.type === "follow") {
-      navigate(`/profile/${notif.fromUsername}`);
-    }
+    navigate(`/profile/${notif.fromUsername}`);
     setOpen(false);
+  }
+
+  function getNotifMessage(notif: NotifType) {
+    switch (notif.type) {
+      case "follow":
+        return <><strong>@{notif.fromUsername}</strong> a commencé à vous suivre</>;
+      case "like":
+        return (
+          <>
+            <strong>@{notif.fromUsername}</strong> a aimé votre tweet
+            {notif.tweetContent && (
+              <span className="notification-tweet-preview"> : "{notif.tweetContent}"</span>
+            )}
+          </>
+        );
+      default:
+        return <><strong>@{notif.fromUsername}</strong> a interagi avec vous</>;
+    }
   }
 
   return (
@@ -133,7 +149,7 @@ function NotificationBell() {
                 </div>
                 <div className="notification-content">
                   <p className="notification-text">
-                    <strong>@{notif.fromUsername}</strong> a commencé à vous suivre
+                    {getNotifMessage(notif)}
                   </p>
                   <p className="notification-time">{timeAgo(notif.createdAt)}</p>
                 </div>

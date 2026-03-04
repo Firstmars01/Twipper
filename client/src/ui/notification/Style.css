@@ -148,6 +148,12 @@
   margin: 2px 0 0;
 }
 
+.notification-tweet-preview {
+  color: #718096;
+  font-style: italic;
+  font-size: 0.78rem;
+}
+
 .notification-empty {
   padding: 2rem 1rem;
   text-align: center;

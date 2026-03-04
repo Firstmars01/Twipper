@@ -8,6 +8,7 @@ export interface Notification {
   createdAt: string;
   fromUsername: string;
   fromAvatar?: string;
+  tweetContent?: string;
 }
 
 // GET /api/notifications
