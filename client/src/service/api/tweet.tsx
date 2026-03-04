@@ -64,6 +64,15 @@ export async function apiGetGlobalFeed(page = 1, limit = 20): Promise<Tweet[]> {
   return data;
 }
 
+// GET /api/tweets/trending
+export async function apiGetTrendingFeed(page = 1, limit = 20): Promise<Tweet[]> {
+  const res = await fetchWithAuth(`${API_BASE}/tweets/trending?page=${page}&limit=${limit}`);
+
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || "Erreur lors du chargement des tendances");
+  return data;
+}
+
 // GET /api/tweets/user/:username
 export async function apiGetUserTweets(username: string, page = 1, limit = 20): Promise<Tweet[]> {
   const res = await fetchWithAuth(`${API_BASE}/tweets/user/${username}?page=${page}&limit=${limit}`);

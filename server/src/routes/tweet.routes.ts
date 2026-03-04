@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createTweet, updateTweet, deleteTweet } from "../controllers/tweet.controller";
-import { getFeed, getGlobalFeed, getUserTweets } from "../controllers/feed.controller";
+import { getFeed, getGlobalFeed, getTrendingFeed, getUserTweets } from "../controllers/feed.controller";
 import { likeTweet, unlikeTweet } from "../controllers/like.controller";
 import { retweetTweet, unretweetTweet } from "../controllers/retweet.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
@@ -12,6 +12,7 @@ tweetRouter.use(authMiddleware);
 tweetRouter.post("/", createTweet);
 tweetRouter.get("/feed", getFeed);
 tweetRouter.get("/global", getGlobalFeed);
+tweetRouter.get("/trending", getTrendingFeed);
 tweetRouter.get("/user/:username", getUserTweets);
 tweetRouter.put("/:id", updateTweet);
 tweetRouter.delete("/:id", deleteTweet);

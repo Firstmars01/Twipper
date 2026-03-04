@@ -52,6 +52,47 @@ export async function getGlobalFeed(req: AuthRequest, res: Response) {
   }
 }
 
+// GET /api/tweets/trending  (tweets triés par likes des 3 derniers jours)
+export async function getTrendingFeed(req: AuthRequest, res: Response) {
+  try {
+    const userId = req.userId!;
+    const { skip, take } = parsePagination(req);
+
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+    const tweets = await prisma.tweet.findMany({
+      include: {
+        ...tweetInclude(userId),
+        _count: {
+          select: {
+            likes: true,
+          },
+        },
+      },
+      orderBy: {
+        likes: {
+          _count: "desc",
+        },
+      },
+      where: {
+        likes: {
+          some: {
+            createdAt: { gte: threeDaysAgo },
+          },
+        },
+      },
+      skip,
+      take,
+    });
+
+    res.json(tweets.map(formatTweet));
+  } catch (error) {
+    console.error("Get trending feed error:", error);
+    res.status(500).json({ error: "Erreur interne" });
+  }
+}
+
 // GET /api/tweets/user/:username
 export async function getUserTweets(req: AuthRequest, res: Response) {
   try {
