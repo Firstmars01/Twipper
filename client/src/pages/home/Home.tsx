@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import {
   Box,
   Heading,
@@ -8,56 +8,21 @@ import {
   VStack,
   HStack,
 } from "@chakra-ui/react";
-import {
-  apiCreateTweet,
-  apiGetFeed,
-  apiGetGlobalFeed,
-  getStoredUser,
-} from "../../service/api";
+import { apiCreateTweet } from "../../service/api";
 import type { Tweet } from "../../service/api";
 import { toaster } from "../../utils/toaster";
-import TweetCard from "../../ui/tweet-card/TweetCard";
+import SuivisTab from "./SuivisTab";
+import TendancesTab from "./TendancesTab";
+import GlobalTab from "./GlobalTab";
 import "./Style.css";
 
 type FeedTab = "suivis" | "tendances" | "global";
 
 function Home() {
   const [content, setContent] = useState("");
-  const [tweets, setTweets] = useState<Tweet[]>([]);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<FeedTab>("suivis");
-  const currentUser = getStoredUser();
-
-  const loadFeed = useCallback(async (tab: FeedTab) => {
-    try {
-      let data: Tweet[];
-      switch (tab) {
-        case "global":
-          data = await apiGetGlobalFeed();
-          break;
-        case "tendances":
-          // TODO : implémenter le endpoint tendances
-          data = [];
-          break;
-        case "suivis":
-        default:
-          data = await apiGetFeed();
-          break;
-      }
-      setTweets(data);
-    } catch (err: any) {
-      toaster.create({
-        title: "Erreur",
-        description: err.message,
-        type: "error",
-        duration: 4000,
-      });
-    }
-  }, []);
-
-  useEffect(() => {
-    loadFeed(activeTab);
-  }, [activeTab, loadFeed]);
+  const [lastTweet, setLastTweet] = useState<Tweet | null>(null);
 
   function handleTabChange(tab: FeedTab) {
     if (tab === activeTab) return;
@@ -72,7 +37,7 @@ function Home() {
     if (content.length > 280) {
       toaster.create({
         title: "Tweet trop long",
-        description: "280 caract\u00e8res maximum",
+        description: "280 caractères maximum",
         type: "error",
         duration: 4000,
       });
@@ -82,10 +47,10 @@ function Home() {
     setLoading(true);
     try {
       const tweet = await apiCreateTweet(content);
-      setTweets((prev) => [tweet, ...prev]);
+      setLastTweet(tweet);
       setContent("");
       toaster.create({
-        title: "Tweet publi\u00e9 !",
+        title: "Tweet publié !",
         type: "success",
         duration: 3000,
       });
@@ -101,33 +66,11 @@ function Home() {
     }
   }
 
-  function handleUpdated(updated: Tweet) {
-    setTweets((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
-  }
-
-  function handleDeleted(id: string) {
-    setTweets((prev) => prev.filter((t) => t.id !== id));
-  }
-
-  function handleLikeChanged(id: string, isLiked: boolean, likes: number) {
-    setTweets((prev) =>
-      prev.map((t) =>
-        t.id === id ? { ...t, isLiked, _count: { ...t._count, likes } } : t
-      )
-    );
-  }
-
-  function handleRetweeted(retweet: Tweet) {
-    setTweets((prev) => [retweet, ...prev]);
-  }
-
   return (
     <Box className="home">
       <Heading size="lg" mb={4}>
         Fil d'actualit
       </Heading>
-
-    
 
       {/* Formulaire de tweet */}
       <Box className="tweet-form-card" mb={6}>
@@ -183,28 +126,10 @@ function Home() {
         </button>
       </div>
 
-      {/* Liste des tweets */}
-      <VStack align="stretch" gap={4}>
-        {tweets.length === 0 && (
-          <Text color="gray.500" textAlign="center">
-            {activeTab === "tendances"
-              ? "Les tendances arrivent bientôt !"
-              : "Aucun tweet pour le moment. Publiez le premier !"}
-          </Text>
-        )}
-
-        {tweets.map((tweet) => (
-          <TweetCard
-            key={tweet.id}
-            tweet={tweet}
-            currentUserId={currentUser?.id}
-            onUpdated={handleUpdated}
-            onDeleted={handleDeleted}
-            onLikeChanged={handleLikeChanged}
-            onRetweeted={handleRetweeted}
-          />
-        ))}
-      </VStack>
+      {/* Contenu de l'onglet actif */}
+      {activeTab === "suivis" && <SuivisTab newTweet={lastTweet} />}
+      {activeTab === "tendances" && <TendancesTab />}
+      {activeTab === "global" && <GlobalTab newTweet={lastTweet} />}
     </Box>
   );
 }
