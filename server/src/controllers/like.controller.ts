@@ -27,6 +27,26 @@ export async function likeTweet(req: AuthRequest, res: Response) {
     await prisma.like.create({ data: { userId, tweetId: id } });
     const likesCount = await prisma.like.count({ where: { tweetId: id } });
 
+    // Créer une notification pour l'auteur du tweet (sauf si c'est soi-même)
+    if (tweet.authorId !== userId) {
+      const currentUser = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { username: true, avatar: true },
+      });
+
+      if (currentUser) {
+        await prisma.notification.create({
+          data: {
+            type: "like",
+            userId: tweet.authorId,
+            fromUsername: currentUser.username,
+            fromAvatar: currentUser.avatar,
+            tweetContent: tweet.content.substring(0, 80),
+          },
+        });
+      }
+    }
+
     res.json({ isLiked: true, likes: likesCount });
   } catch (error) {
     console.error("Like tweet error:", error);

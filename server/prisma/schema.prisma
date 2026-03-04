@@ -80,7 +80,7 @@ model Follow {
 
 model Notification {
   id        String   @id @default(uuid())
-  type      String   // "follow"
+  type      String   // "follow" | "like"
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
 
@@ -88,9 +88,12 @@ model Notification {
   userId    String
   user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  // L'utilisateur qui a déclenché la notification (ex: celui qui a suivi)
+  // L'utilisateur qui a déclenché la notification
   fromUsername String
   fromAvatar   String?
+
+  // Contexte optionnel (ex: extrait du tweet liké)
+  tweetContent String?
 
   @@map("notifications")
 }
