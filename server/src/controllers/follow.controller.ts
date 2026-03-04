@@ -27,6 +27,24 @@ export async function followUser(req: AuthRequest, res: Response) {
     }
 
     await createFollow(currentUserId, target.id);
+
+    // Créer une notification pour l'utilisateur suivi
+    const currentUser = await prisma.user.findUnique({
+      where: { id: currentUserId },
+      select: { username: true, avatar: true },
+    });
+
+    if (currentUser) {
+      await prisma.notification.create({
+        data: {
+          type: "follow",
+          userId: target.id,
+          fromUsername: currentUser.username,
+          fromAvatar: currentUser.avatar,
+        },
+      });
+    }
+
     res.status(201).json({ message: "Utilisateur suivi avec succès" });
   } catch (error) {
     console.error("Follow error:", error);
