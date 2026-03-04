@@ -14,6 +14,10 @@ export { apiFollowUser, apiUnfollowUser, apiGetFollowers, apiGetFollowing } from
 export { apiCreateTweet, apiGetFeed, apiGetGlobalFeed, apiGetTrendingFeed, apiGetUserTweets, apiUpdateTweet, apiDeleteTweet, apiLikeTweet, apiUnlikeTweet, apiRetweetTweet, apiUnretweetTweet } from "./tweet";
 export type { Tweet } from "./tweet";
 
+// Notifications
+export { apiGetNotifications, apiGetUnreadCount, apiMarkAllAsRead } from "./notification";
+export type { Notification } from "./notification";
+
 // HTTP & helpers
 export {
   saveAuth,

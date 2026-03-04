@@ -1,6 +1,7 @@
 import { Box, Flex, Heading, Button, HStack } from "@chakra-ui/react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { isAuthenticated, getStoredUser, logout } from "../../service/api";
+import NotificationBell from "../notification/Notification";
 import "./Style.css";
 
 function TopBar() {
@@ -25,6 +26,7 @@ function TopBar() {
         <HStack className="topbar-actions">
           {authenticated && user ? (
             <>
+              <NotificationBell />
               <Button className="topbar-btn-user" onClick={() => navigate(`/profile/${user.username}`)}>
                 @{user.username}
               </Button>
