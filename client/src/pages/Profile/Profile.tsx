@@ -105,20 +105,20 @@ function Profile() {
 
       {/* Tweets de l'utilisateur */}
       <Box className="profile-tweets">
-        <Heading size="md" mb={4}>
+        <Heading className="profile-tweets-title">
           Tweets
         </Heading>
 
         {tweetsLoading ? (
-          <Box textAlign="center" py={4}>
-            <Spinner size="md" />
+          <Box className="profile-spinner">
+            <Spinner />
           </Box>
         ) : tweets.length === 0 ? (
-          <Text color="gray.500" textAlign="center">
+          <Text className="profile-empty">
             Aucun tweet pour le moment.
           </Text>
         ) : (
-          <VStack align="stretch" gap={3}>
+          <VStack className="profile-tweets-list">
             {tweets.map((tweet) => (
               <TweetCard
                 key={tweet.id}
