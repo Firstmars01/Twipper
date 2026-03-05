@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import { authRouter } from "./routes/auth.routes";
 import { userRouter } from "./routes/user.routes";
 import { tweetRouter } from "./routes/tweet.routes";
+import { commentRouter } from "./routes/comment.routes";
 import { notificationRouter } from "./routes/notification.routes";
 
 import { errorHandler } from "./middleware/error.middleware";
@@ -25,6 +26,7 @@ app.get("/api/health", (_req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/tweets", tweetRouter);
+app.use("/api", commentRouter);
 app.use("/api/notifications", notificationRouter);
 
 

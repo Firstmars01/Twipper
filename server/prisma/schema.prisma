@@ -1,5 +1,5 @@
 // Prisma Schema - Twipper
-// Relations : User ↔ Tweet ↔ Like + Follow
+// Relations : User ↔ Tweet ↔ Like + Follow + Comment + CommentLike
 
 generator client {
   provider = "prisma-client-js"
@@ -24,6 +24,8 @@ model User {
   // Relations
   tweets        Tweet[]
   likes         Like[]
+  comments      Comment[]
+  commentLikes  CommentLike[]
   followers     Follow[] @relation("following") // users who follow this user
   following     Follow[] @relation("follower")  // users this user follows
   notifications Notification[]
@@ -41,6 +43,7 @@ model Tweet {
   authorId    String
   author      User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
   likes       Like[]
+  comments    Comment[]
 
   // Retweet : si ce tweet est un retweet, référence le tweet original
   retweetOfId String?
@@ -96,4 +99,43 @@ model Notification {
   tweetContent String?
 
   @@map("notifications")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String   @db.VarChar(280)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Auteur du commentaire
+  authorId  String
+  author    User @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  // Tweet commenté
+  tweetId   String
+  tweet     Tweet @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+
+  // Commentaire parent (pour les réponses à un commentaire)
+  parentId  String?
+  parent    Comment?  @relation("CommentReply", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("CommentReply")
+
+  // Likes sur ce commentaire
+  likes     CommentLike[]
+
+  @@map("comments")
+}
+
+model CommentLike {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  // Relations
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  commentId String
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, commentId]) // un user ne peut liker qu'une fois un commentaire
+  @@map("comment_likes")
 }

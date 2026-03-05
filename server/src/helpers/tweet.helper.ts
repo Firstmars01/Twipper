@@ -10,7 +10,7 @@ export function tweetInclude(userId: string) {
     author: {
       select: { id: true, username: true, avatar: true },
     },
-    _count: { select: { likes: true } },
+    _count: { select: { likes: true, comments: true } },
     likes: {
       where: { userId },
       select: { id: true },
@@ -20,7 +20,7 @@ export function tweetInclude(userId: string) {
         author: {
           select: { id: true, username: true, avatar: true },
         },
-        _count: { select: { likes: true } },
+        _count: { select: { likes: true, comments: true } },
         likes: {
           where: { userId },
           select: { id: true },
