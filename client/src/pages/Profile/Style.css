@@ -203,3 +203,35 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* ── Tweets section ── */
+.profile-tweets {
+  max-width: 600px;
+  margin: 1.5rem auto 2rem;
+  padding: 0 1rem;
+}
+
+.profile-tweets-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Liste des tweets */
+.profile-tweets-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Spinner */
+.profile-spinner {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+/* Message vide */
+.profile-empty {
+  color: #a0aec0;
+  text-align: center;
+}
