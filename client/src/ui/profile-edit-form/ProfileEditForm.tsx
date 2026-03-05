@@ -3,16 +3,29 @@ import { Box, Button, Input, Textarea, VStack, HStack, Text } from "@chakra-ui/r
 import { apiUpdateProfile, saveAuth, getToken, getRefreshToken } from "../../service/api";
 import { validateUsername } from "../../utils/validation";
 
+const BANNER_COLORS = [
+  { label: "Bleu", value: "linear-gradient(135deg, #1da1f2, #0d8ecf)" },
+  { label: "Violet", value: "linear-gradient(135deg, #8b5cf6, #6d28d9)" },
+  { label: "Rose", value: "linear-gradient(135deg, #ec4899, #db2777)" },
+  { label: "Vert", value: "linear-gradient(135deg, #10b981, #059669)" },
+  { label: "Orange", value: "linear-gradient(135deg, #f97316, #ea580c)" },
+  { label: "Rouge", value: "linear-gradient(135deg, #ef4444, #dc2626)" },
+  { label: "Sombre", value: "linear-gradient(135deg, #1a202c, #2d3748)" },
+  { label: "Cyan", value: "linear-gradient(135deg, #06b6d4, #0891b2)" },
+];
+
 interface ProfileEditFormProps {
   currentUsername: string;
   currentBio: string;
-  onSaved: (updated: { username: string; bio?: string }) => void;
+  currentFlag?: string;
+  onSaved: (updated: { username: string; bio?: string; flag?: string }) => void;
   onCancel: () => void;
 }
 
-export default function ProfileEditForm({ currentUsername, currentBio, onSaved, onCancel }: ProfileEditFormProps) {
+export default function ProfileEditForm({ currentUsername, currentBio, currentFlag, onSaved, onCancel }: ProfileEditFormProps) {
   const [username, setUsername] = useState(currentUsername);
   const [bio, setBio] = useState(currentBio);
+  const [flag, setFlag] = useState(currentFlag || BANNER_COLORS[0].value);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,7 +47,7 @@ export default function ProfileEditForm({ currentUsername, currentBio, onSaved, 
 
     setLoading(true);
     try {
-      const updated = await apiUpdateProfile({ username: username.trim(), bio: bio.trim() });
+      const updated = await apiUpdateProfile({ username: username.trim(), bio: bio.trim(), flag });
 
       // Mettre à jour le user stocké en localStorage/sessionStorage
       const token = getToken();
@@ -43,7 +56,7 @@ export default function ProfileEditForm({ currentUsername, currentBio, onSaved, 
         saveAuth({ user: updated, token, refreshToken });
       }
 
-      onSaved({ username: updated.username, bio: updated.bio });
+      onSaved({ username: updated.username, bio: updated.bio, flag: updated.flag });
     } catch (err: any) {
       setError(err.message || "Erreur lors de la mise à jour");
     } finally {
@@ -51,7 +64,7 @@ export default function ProfileEditForm({ currentUsername, currentBio, onSaved, 
     }
   }
 
-  const hasChanges = username !== currentUsername || bio !== currentBio;
+  const hasChanges = username !== currentUsername || bio !== currentBio || flag !== (currentFlag || BANNER_COLORS[0].value);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -80,6 +93,36 @@ export default function ProfileEditForm({ currentUsername, currentBio, onSaved, 
               className="profile-edit-input"
             />
             <Text className="profile-edit-counter">{bio.length}/160</Text>
+          </Box>
+
+          <Box>
+            <Text className="profile-edit-label">Couleur de bannière</Text>
+            <HStack gap={2} flexWrap="wrap" mt={1}>
+              {BANNER_COLORS.map((color) => (
+                <Box
+                  key={color.value}
+                  onClick={() => setFlag(color.value)}
+                  title={color.label}
+                  style={{
+                    width: 32,
+                    height: 32,
+                    borderRadius: 8,
+                    background: color.value,
+                    cursor: "pointer",
+                    border: flag === color.value ? "3px solid #1a202c" : "3px solid transparent",
+                    transition: "border 0.15s ease",
+                  }}
+                />
+              ))}
+            </HStack>
+            <Box
+              mt={2}
+              style={{
+                height: 40,
+                borderRadius: 8,
+                background: flag,
+              }}
+            />
           </Box>
 
           {error && <Text className="profile-edit-error">{error}</Text>}

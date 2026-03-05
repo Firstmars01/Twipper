@@ -15,6 +15,7 @@ export async function getUserByUsername(req: Request, res: Response) {
       email: true,
       bio: true,
       avatar: true,
+      flag: true,
       createdAt: true,
       _count: {
         select: {
@@ -59,7 +60,7 @@ export async function getUserByUsername(req: Request, res: Response) {
 // PUT /api/users/me — update own profile (username, bio)
 export async function updateProfile(req: AuthRequest, res: Response) {
   const userId = req.userId!;
-  const { username, bio } = req.body;
+  const { username, bio, flag } = req.body;
 
   // Validation basique
   if (username !== undefined) {
@@ -91,9 +92,15 @@ export async function updateProfile(req: AuthRequest, res: Response) {
     }
   }
 
+  if (flag !== undefined && typeof flag !== "string") {
+    res.status(400).json({ error: "Le flag doit être une chaîne de caractères" });
+    return;
+  }
+
   const data: Record<string, string | null> = {};
   if (username !== undefined) data.username = username.trim();
   if (bio !== undefined) data.bio = bio.trim() || null;
+  if (flag !== undefined) data.flag = flag.trim() || null;
 
   const updated = await prisma.user.update({
     where: { id: userId },
@@ -103,6 +110,7 @@ export async function updateProfile(req: AuthRequest, res: Response) {
       email: true,
       bio: true,
       avatar: true,
+      flag: true,
       createdAt: true,
     },
   data,

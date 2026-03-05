@@ -44,7 +44,10 @@ function Profile() {
 
   return (
     <Box className="profile">
-      <Box className="profile-banner" />
+      <Box
+        className="profile-banner"
+        style={{ background: user.flag || "linear-gradient(135deg, #1da1f2, #0d8ecf)" }}
+      />
       <Box className="profile-body">
         <Box className="profile-avatar">
           {user.username.charAt(0).toUpperCase()}
@@ -78,6 +81,7 @@ function Profile() {
           <ProfileEditForm
             currentUsername={user.username}
             currentBio={user.bio || ""}
+            currentFlag={user.flag}
             onSaved={handleProfileSaved}
             onCancel={() => setEditing(false)}
           />

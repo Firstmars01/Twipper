@@ -7,6 +7,7 @@ export interface AuthResponse {
     username: string;
     bio?: string;
     avatar?: string;
+    flag?: string;
     createdAt?: string;
   };
   token: string;

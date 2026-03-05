@@ -10,6 +10,7 @@ const USER_PUBLIC_SELECT = {
   username: true,
   bio: true,
   avatar: true,
+  flag: true,
   createdAt: true,
 } as const;
 
@@ -128,7 +129,7 @@ export async function refreshToken(req: Request, res: Response) {
 
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
-      select: { id: true, email: true, username: true, bio: true, avatar: true },
+      select: { id: true, email: true, username: true, bio: true, avatar: true, flag: true },
     });
 
     if (!user) {
