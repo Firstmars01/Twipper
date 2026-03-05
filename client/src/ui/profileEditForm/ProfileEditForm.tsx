@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Box, Button, Input, Textarea, VStack, HStack, Text } from "@chakra-ui/react";
 import { apiUpdateProfile, saveAuth, getToken, getRefreshToken } from "../../service/api";
 import { validateUsername } from "../../utils/validation";
+import GifPicker from "../gifPicker/GifPicker";
 
 const BANNER_COLORS = [
   { label: "Bleu", value: "linear-gradient(135deg, #1da1f2, #0d8ecf)" },
@@ -18,14 +19,17 @@ interface ProfileEditFormProps {
   currentUsername: string;
   currentBio: string;
   currentFlag?: string;
-  onSaved: (updated: { username: string; bio?: string; flag?: string }) => void;
+  currentAvatar?: string;
+  onSaved: (updated: { username: string; bio?: string; flag?: string; avatar?: string }) => void;
   onCancel: () => void;
 }
 
-export default function ProfileEditForm({ currentUsername, currentBio, currentFlag, onSaved, onCancel }: ProfileEditFormProps) {
+export default function ProfileEditForm({ currentUsername, currentBio, currentFlag, currentAvatar, onSaved, onCancel }: ProfileEditFormProps) {
   const [username, setUsername] = useState(currentUsername);
   const [bio, setBio] = useState(currentBio);
   const [flag, setFlag] = useState(currentFlag || BANNER_COLORS[0].value);
+  const [avatar, setAvatar] = useState(currentAvatar || "");
+  const [showGifPicker, setShowGifPicker] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +51,7 @@ export default function ProfileEditForm({ currentUsername, currentBio, currentFl
 
     setLoading(true);
     try {
-      const updated = await apiUpdateProfile({ username: username.trim(), bio: bio.trim(), flag });
+      const updated = await apiUpdateProfile({ username: username.trim(), bio: bio.trim(), flag, avatar: avatar || undefined });
 
       // Mettre à jour le user stocké en localStorage/sessionStorage
       const token = getToken();
@@ -56,7 +60,7 @@ export default function ProfileEditForm({ currentUsername, currentBio, currentFl
         saveAuth({ user: updated, token, refreshToken });
       }
 
-      onSaved({ username: updated.username, bio: updated.bio, flag: updated.flag });
+      onSaved({ username: updated.username, bio: updated.bio, flag: updated.flag, avatar: updated.avatar });
     } catch (err: any) {
       setError(err.message || "Erreur lors de la mise à jour");
     } finally {
@@ -64,7 +68,7 @@ export default function ProfileEditForm({ currentUsername, currentBio, currentFl
     }
   }
 
-  const hasChanges = username !== currentUsername || bio !== currentBio || flag !== (currentFlag || BANNER_COLORS[0].value);
+  const hasChanges = username !== currentUsername || bio !== currentBio || flag !== (currentFlag || BANNER_COLORS[0].value) || avatar !== (currentAvatar || "");
 
   return (
     <form onSubmit={handleSubmit}>
@@ -93,6 +97,44 @@ export default function ProfileEditForm({ currentUsername, currentBio, currentFl
               className="profile-edit-input"
             />
             <Text className="profile-edit-counter">{bio.length}/160</Text>
+          </Box>
+
+          <Box>
+            <Text className="profile-edit-label">Avatar</Text>
+            <HStack gap={3} align="center" mt={1}>
+              <Box
+                style={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: "50%",
+                  background: "#e2e8f0",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "1.5rem",
+                  fontWeight: 700,
+                  color: "#1da1f2",
+                  overflow: "hidden",
+                  flexShrink: 0,
+                }}
+              >
+                {avatar ? (
+                  <img src={avatar} alt="avatar" className="profile-edit-avatar-img" />
+                ) : (
+                  username.charAt(0).toUpperCase()
+                )}
+              </Box>
+              <VStack align="start" gap={1}>
+                <Button size="sm" variant="outline" onClick={() => setShowGifPicker(true)}>
+                  Choisir un GIF
+                </Button>
+                {avatar && (
+                  <Button size="sm" variant="ghost" colorScheme="red" onClick={() => setAvatar("")}>
+                    Supprimer l'avatar
+                  </Button>
+                )}
+              </VStack>
+            </HStack>
           </Box>
 
           <Box>
@@ -142,6 +184,15 @@ export default function ProfileEditForm({ currentUsername, currentBio, currentFl
           </HStack>
         </VStack>
       </Box>
+      {showGifPicker && (
+        <GifPicker
+          onSelect={(url) => {
+            setAvatar(url);
+            setShowGifPicker(false);
+          }}
+          onCancel={() => setShowGifPicker(false)}
+        />
+      )}
     </form>
   );
 }

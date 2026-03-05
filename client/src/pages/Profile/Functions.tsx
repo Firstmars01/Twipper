@@ -101,9 +101,9 @@ export function useProfile() {
   }
 
   // ── Profile edit ──
-  function handleProfileSaved(updated: { username: string; bio?: string; flag?: string }) {
+  function handleProfileSaved(updated: { username: string; bio?: string; flag?: string; avatar?: string }) {
     setEditing(false);
-    setUser((prev) => (prev ? { ...prev, username: updated.username, bio: updated.bio, flag: updated.flag } : prev));
+    setUser((prev) => (prev ? { ...prev, username: updated.username, bio: updated.bio, flag: updated.flag, avatar: updated.avatar } : prev));
     // Rafraîchir currentUser depuis le storage (mis à jour par ProfileEditForm)
     setCurrentUser(getStoredUser());
     if (updated.username !== username) {

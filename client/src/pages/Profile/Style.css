@@ -200,6 +200,12 @@
   cursor: not-allowed;
 }
 
+.profile-edit-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Section tweets */
 .profile-tweets {
   max-width: 600px;

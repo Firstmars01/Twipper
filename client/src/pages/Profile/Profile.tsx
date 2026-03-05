@@ -86,6 +86,7 @@ function Profile() {
             currentUsername={user.username}
             currentBio={user.bio || ""}
             currentFlag={user.flag}
+            currentAvatar={user.avatar}
             onSaved={handleProfileSaved}
             onCancel={() => setEditing(false)}
           />

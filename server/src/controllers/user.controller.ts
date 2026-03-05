@@ -60,7 +60,7 @@ export async function getUserByUsername(req: Request, res: Response) {
 // PUT /api/users/me — update own profile (username, bio)
 export async function updateProfile(req: AuthRequest, res: Response) {
   const userId = req.userId!;
-  const { username, bio, flag } = req.body;
+  const { username, bio, flag, avatar } = req.body;
 
   // Validation basique
   if (username !== undefined) {
@@ -97,10 +97,16 @@ export async function updateProfile(req: AuthRequest, res: Response) {
     return;
   }
 
+  if (avatar !== undefined && typeof avatar !== "string") {
+    res.status(400).json({ error: "L'avatar doit être une chaîne de caractères (URL)" });
+    return;
+  }
+
   const data: Record<string, string | null> = {};
   if (username !== undefined) data.username = username.trim();
   if (bio !== undefined) data.bio = bio.trim() || null;
   if (flag !== undefined) data.flag = flag.trim() || null;
+  if (avatar !== undefined) data.avatar = avatar.trim() || null;
 
   const updated = await prisma.user.update({
     where: { id: userId },

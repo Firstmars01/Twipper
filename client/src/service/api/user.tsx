@@ -21,7 +21,7 @@ export async function apiGetUserByUsername(username: string) {
 }
 
 // PUT /api/users/me
-export async function apiUpdateProfile(body: { username?: string; bio?: string; flag?: string }): Promise<AuthResponse["user"]> {
+export async function apiUpdateProfile(body: { username?: string; bio?: string; flag?: string; avatar?: string }): Promise<AuthResponse["user"]> {
   const res = await fetchWithAuth(`${API_BASE}/users/me`, {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
