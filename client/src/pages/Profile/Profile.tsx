@@ -49,9 +49,13 @@ function Profile() {
         style={{ background: user.flag || "linear-gradient(135deg, #1da1f2, #0d8ecf)" }}
       />
       <Box className="profile-body">
-        <Box className="profile-avatar">
-          {user.username.charAt(0).toUpperCase()}
-        </Box>
+        {user.avatar ? (
+          <img className="profile-avatar" src={user.avatar} alt={user.username} />
+        ) : (
+          <Box className="profile-avatar">
+            {user.username.charAt(0).toUpperCase()}
+          </Box>
+        )}
         <Box className="profile-header">
           <Box>
             <Heading className="profile-title">@{user.username}</Heading>

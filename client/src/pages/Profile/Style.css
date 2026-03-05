@@ -29,6 +29,7 @@
   font-weight: 700;
   color: #1da1f2;
   margin-top: -50px;
+  object-fit: cover;
 }
 
 /* ── Header (title + follow btn) ── */
