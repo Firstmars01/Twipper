@@ -117,12 +117,7 @@
   background: #edf2f7;
 }
 
-/* ── Tweets section ── */
-.profile-tweets {
-  max-width: 600px;
-  margin: 1.5rem auto 2rem;
-  padding: 0 1rem;
-}
+
 
 /* ── Loading ── */
 .profile-loading {
@@ -165,14 +160,14 @@
 }
 
 .profile-edit-input {
-  border-radius: 8px !important;
-  border: 1px solid #e2e8f0 !important;
-  background: #fff !important;
+  border-radius: 8px ;
+  border: 1px solid #e2e8f0 ;
+  background: #fff ;
 }
 
 .profile-edit-input:focus-within {
-  border-color: #1da1f2 !important;
-  box-shadow: 0 0 0 1px #1da1f2 !important;
+  border-color: #1da1f2 ;
+  box-shadow: 0 0 0 1px #1da1f2 ;
 }
 
 .profile-edit-counter {
@@ -189,9 +184,9 @@
 }
 
 .profile-edit-save-btn {
-  background: linear-gradient(135deg, #1da1f2, #0d8ecf) !important;
-  color: #fff !important;
-  border-radius: 999px !important;
+  background: linear-gradient(135deg, #1da1f2, #0d8ecf) ;
+  color: #fff ;
+  border-radius: 999px ;
   font-weight: 600;
   padding: 0.4rem 1.2rem;
 }

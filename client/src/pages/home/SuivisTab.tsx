@@ -1,17 +1,17 @@
-import { useState, useEffect, useCallback } from "react";
-import { VStack, Text } from "@chakra-ui/react";
+import { useEffect, useCallback } from "react";
 import { apiGetFeed, getStoredUser } from "../../service/api";
 import type { Tweet } from "../../service/api";
 import { toaster } from "../../utils/toaster";
-import TweetCard from "../../ui/tweetCard/TweetCard";
+import { useTweetList } from "../../ui/tweet-list/useTweetList";
+import TweetList from "../../ui/tweet-list/TweetList";
 
 interface SuivisTabProps {
   newTweet: Tweet | null;
 }
 
 function SuivisTab({ newTweet }: SuivisTabProps) {
-  const [tweets, setTweets] = useState<Tweet[]>([]);
   const currentUser = getStoredUser();
+  const { tweets, setTweets, addTweet, handleUpdated, handleDeleted, handleLikeChanged, handleRetweeted } = useTweetList();
 
   const loadFeed = useCallback(async () => {
     try {
@@ -25,62 +25,26 @@ function SuivisTab({ newTweet }: SuivisTabProps) {
         duration: 4000,
       });
     }
-  }, []);
+  }, [setTweets]);
 
   useEffect(() => {
     loadFeed();
   }, [loadFeed]);
 
   useEffect(() => {
-    if (newTweet) {
-      setTweets((prev) =>
-        prev.some((t) => t.id === newTweet.id) ? prev : [newTweet, ...prev]
-      );
-    }
-  }, [newTweet]);
-
-  function handleUpdated(updated: Tweet) {
-    setTweets((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
-  }
-
-  function handleDeleted(id: string) {
-    setTweets((prev) => prev.filter((t) => t.id !== id && t.retweetOf?.id !== id));
-  }
-
-  function handleLikeChanged(id: string, isLiked: boolean, likes: number) {
-    setTweets((prev) =>
-      prev.map((t) =>
-        t.id === id ? { ...t, isLiked, _count: { ...t._count, likes } } : t
-      )
-    );
-  }
-
-  function handleRetweeted(retweet: Tweet) {
-    setTweets((prev) =>
-      prev.some((t) => t.id === retweet.id) ? prev : [retweet, ...prev]
-    );
-  }
+    if (newTweet) addTweet(newTweet);
+  }, [newTweet, addTweet]);
 
   return (
-    <VStack align="stretch" gap={4}>
-      {tweets.length === 0 && (
-        <Text color="gray.500" textAlign="center">
-          Aucun tweet pour le moment. Publiez le premier !
-        </Text>
-      )}
-
-      {tweets.map((tweet) => (
-        <TweetCard
-          key={tweet.id}
-          tweet={tweet}
-          currentUserId={currentUser?.id}
-          onUpdated={handleUpdated}
-          onDeleted={handleDeleted}
-          onLikeChanged={handleLikeChanged}
-          onRetweeted={handleRetweeted}
-        />
-      ))}
-    </VStack>
+    <TweetList
+      tweets={tweets}
+      currentUserId={currentUser?.id}
+      emptyMessage="Aucun tweet pour le moment. Publiez le premier !"
+      onUpdated={handleUpdated}
+      onDeleted={handleDeleted}
+      onLikeChanged={handleLikeChanged}
+      onRetweeted={handleRetweeted}
+    />
   );
 }
 

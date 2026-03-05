@@ -10,6 +10,7 @@ import {
 import type { Tweet } from "../../service/api";
 import type { FollowUser } from "../../ui/followListDialog/FollowListDialog";
 import { DIALOG_CONFIG, type UserProfile, type DialogKind } from "./Types";
+import { useTweetList } from "../../ui/tweet-list/useTweetList";
 
 export function useProfile() {
   const { username } = useParams();
@@ -25,7 +26,7 @@ export function useProfile() {
   const [dialogUsers, setDialogUsers] = useState<FollowUser[]>([]);
   const [dialogLoading, setDialogLoading] = useState(false);
 
-  const [tweets, setTweets] = useState<Tweet[]>([]);
+  const { tweets, setTweets: replaceTweets, handleUpdated: handleTweetUpdated, handleDeleted: baseTweetDeleted, handleLikeChanged, handleRetweeted } = useTweetList();
   const [tweetsLoading, setTweetsLoading] = useState(false);
   const [editing, setEditing] = useState(false);
 
@@ -46,8 +47,8 @@ export function useProfile() {
 
     setTweetsLoading(true);
     apiGetUserTweets(username)
-      .then(setTweets)
-      .catch(() => setTweets([]))
+      .then(replaceTweets)
+      .catch(() => replaceTweets([]))
       .finally(() => setTweetsLoading(false));
   }, [username]);
 
@@ -93,29 +94,11 @@ export function useProfile() {
   );
 
   // ── Tweet callbacks ──
-  function handleTweetUpdated(updated: Tweet) {
-    setTweets((prev) => prev.map((t) => (t.id === updated.id ? updated : t)));
-  }
-
   function handleTweetDeleted(id: string) {
-    setTweets((prev) => prev.filter((t) => t.id !== id && t.retweetOf?.id !== id));
+    baseTweetDeleted(id);
     if (user) {
       setUser({ ...user, _count: { ...user._count, tweets: user._count.tweets - 1 } });
     }
-  }
-
-  function handleLikeChanged(id: string, isLiked: boolean, likes: number) {
-    setTweets((prev) =>
-      prev.map((t) =>
-        t.id === id ? { ...t, isLiked, _count: { ...t._count, likes } } : t
-      )
-    );
-  }
-
-  function handleRetweeted(retweet: Tweet) {
-    setTweets((prev) =>
-      prev.some((t) => t.id === retweet.id) ? prev : [retweet, ...prev]
-    );
   }
 
   // ── Profile edit ──

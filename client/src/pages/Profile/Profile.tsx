@@ -1,7 +1,7 @@
-import { Box, Heading, Text, Spinner, Button, VStack } from "@chakra-ui/react";
+import { Box, Heading, Text, Spinner, Button } from "@chakra-ui/react";
 import Page404 from "../page404/Page404";
 import FollowListDialog from "../../ui/followListDialog/FollowListDialog";
-import TweetCard from "../../ui/tweetCard/TweetCard";
+import TweetList from "../../ui/tweet-list/TweetList";
 import ProfileEditForm from "../../ui/profileEditForm/ProfileEditForm";
 import { useProfile } from "./Functions";
 import "./Style.css";
@@ -121,25 +121,17 @@ function Profile() {
           <Box className="profile-spinner">
             <Spinner />
           </Box>
-        ) : tweets.length === 0 ? (
-          <Text className="profile-empty">
-            Aucun tweet pour le moment.
-          </Text>
         ) : (
-          <VStack className="profile-tweets-list">
-            {tweets.map((tweet) => (
-              <TweetCard
-                key={tweet.id}
-                tweet={tweet}
-                currentUserId={currentUser?.id}
-                onUpdated={handleTweetUpdated}
-                onDeleted={handleTweetDeleted}
-                onLikeChanged={handleLikeChanged}
-                onRetweeted={handleRetweeted}
-                hideAuthorLink
-              />
-            ))}
-          </VStack>
+          <TweetList
+            tweets={tweets}
+            currentUserId={currentUser?.id}
+            emptyMessage="Aucun tweet pour le moment."
+            onUpdated={handleTweetUpdated}
+            onDeleted={handleTweetDeleted}
+            onLikeChanged={handleLikeChanged}
+            onRetweeted={handleRetweeted}
+            hideAuthorLink
+          />
         )}
       </Box>
 
