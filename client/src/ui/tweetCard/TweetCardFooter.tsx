@@ -1,5 +1,5 @@
 import { Button } from "@chakra-ui/react";
-import { FaHeart, FaRegHeart, FaRetweet, FaPen, FaTrash } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaRetweet, FaPen, FaTrash, FaRegComment } from "react-icons/fa";
 
 interface TweetCardFooterProps {
   liked: boolean;
@@ -9,10 +9,12 @@ interface TweetCardFooterProps {
   isOwner: boolean;
   isRetweet: boolean;
   editing: boolean;
+  commentsOpen: boolean;
   onToggleLike: () => void;
   onRetweet: () => void;
   onStartEdit: () => void;
   onDelete: () => void;
+  onToggleComments: () => void;
 }
 
 export function TweetCardFooter({
@@ -23,10 +25,12 @@ export function TweetCardFooter({
   isOwner,
   isRetweet,
   editing,
+  commentsOpen,
   onToggleLike,
   onRetweet,
   onStartEdit,
   onDelete,
+  onToggleComments,
 }: TweetCardFooterProps) {
   const likeButtonClass = `tweet-card-like-btn ${liked ? "tweet-card-like-btn--liked" : ""}`;
 
@@ -38,6 +42,9 @@ export function TweetCardFooter({
         </Button>
         <Button className="tweet-card-retweet-btn" onClick={onRetweet} disabled={retweetDisabled} type="button">
           <FaRetweet /> <span className="tweet-card-btn-label"></span>
+        </Button>
+        <Button className="tweet-card-comment-btn" onClick={onToggleComments} type="button">
+          <FaRegComment /> <span className="tweet-card-btn-label">{commentsOpen ? "" : ""}</span>
         </Button>
       </div>
 

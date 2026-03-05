@@ -18,6 +18,10 @@ export type { Tweet } from "./tweet";
 export { apiGetNotifications, apiGetUnreadCount, apiMarkAllAsRead } from "./notification";
 export type { Notification } from "./notification";
 
+// Comments
+export { apiGetComments, apiCreateComment, apiUpdateComment, apiDeleteComment, apiLikeComment, apiUnlikeComment } from "./comment";
+export type { Comment, CommentsResponse } from "./comment";
+
 // HTTP & helpers
 export {
   saveAuth,

@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useState } from "react";
 import { Box, HStack, Avatar } from "@chakra-ui/react";
 import { FaRetweet } from "react-icons/fa";
 import type { TweetCardProps } from "../../utils/tweetTypes";
@@ -6,6 +6,7 @@ import { useTweetCard } from "./useTweetCard";
 import { TweetCardHeader } from "./TweetCardHeader";
 import { TweetEditForm } from "./TweetEditForm";
 import { TweetCardFooter } from "./TweetCardFooter";
+import { CommentSection } from "../comment/CommentSection";
 import "./TweetCard.css";
 
 function TweetCard({
@@ -37,6 +38,9 @@ function TweetCard({
     handleToggleLike,
     handleRetweet,
   } = useTweetCard({ tweet, currentUserId, onUpdated, onDeleted, onLikeChanged, onRetweeted });
+
+  const [commentsOpen, setCommentsOpen] = useState(false);
+  const realTweetId = isRetweet && tweet.retweetOf ? tweet.retweetOf.id : tweet.id;
 
   return (
     <Box className="tweet-card">
@@ -79,11 +83,17 @@ function TweetCard({
             isOwner={isOwner}
             isRetweet={isRetweet}
             editing={editing}
+            commentsOpen={commentsOpen}
             onToggleLike={handleToggleLike}
             onRetweet={handleRetweet}
             onStartEdit={startEdit}
             onDelete={handleDelete}
+            onToggleComments={() => setCommentsOpen((o) => !o)}
           />
+
+          {commentsOpen && (
+            <CommentSection tweetId={realTweetId} currentUserId={currentUserId} />
+          )}
         </Box>
       </HStack>
     </Box>

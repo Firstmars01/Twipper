@@ -166,6 +166,30 @@
   opacity: 0.5;
 }
 
+.tweet-card-comment-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--chakra-colors-gray-500, #718096);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 8px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.tweet-card-comment-btn svg {
+  font-size: 1.15rem;
+  vertical-align: middle;
+}
+
+.tweet-card-comment-btn:hover {
+  background: #ebf8ff;
+  color: #3182ce;
+}
+
 /* Mobile : masquer les labels texte, garder uniquement les icônes */
 @media (max-width: 480px) {
   .tweet-card-btn-label {
