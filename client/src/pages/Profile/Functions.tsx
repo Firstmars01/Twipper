@@ -98,7 +98,7 @@ export function useProfile() {
   }
 
   function handleTweetDeleted(id: string) {
-    setTweets((prev) => prev.filter((t) => t.id !== id));
+    setTweets((prev) => prev.filter((t) => t.id !== id && t.retweetOf?.id !== id));
     if (user) {
       setUser({ ...user, _count: { ...user._count, tweets: user._count.tweets - 1 } });
     }
@@ -113,7 +113,9 @@ export function useProfile() {
   }
 
   function handleRetweeted(retweet: Tweet) {
-    setTweets((prev) => [retweet, ...prev]);
+    setTweets((prev) =>
+      prev.some((t) => t.id === retweet.id) ? prev : [retweet, ...prev]
+    );
   }
 
   // ── Profile edit ──

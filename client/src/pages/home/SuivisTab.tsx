@@ -33,7 +33,9 @@ function SuivisTab({ newTweet }: SuivisTabProps) {
 
   useEffect(() => {
     if (newTweet) {
-      setTweets((prev) => [newTweet, ...prev]);
+      setTweets((prev) =>
+        prev.some((t) => t.id === newTweet.id) ? prev : [newTweet, ...prev]
+      );
     }
   }, [newTweet]);
 
@@ -42,7 +44,7 @@ function SuivisTab({ newTweet }: SuivisTabProps) {
   }
 
   function handleDeleted(id: string) {
-    setTweets((prev) => prev.filter((t) => t.id !== id));
+    setTweets((prev) => prev.filter((t) => t.id !== id && t.retweetOf?.id !== id));
   }
 
   function handleLikeChanged(id: string, isLiked: boolean, likes: number) {
@@ -54,7 +56,9 @@ function SuivisTab({ newTweet }: SuivisTabProps) {
   }
 
   function handleRetweeted(retweet: Tweet) {
-    setTweets((prev) => [retweet, ...prev]);
+    setTweets((prev) =>
+      prev.some((t) => t.id === retweet.id) ? prev : [retweet, ...prev]
+    );
   }
 
   return (

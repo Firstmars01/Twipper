@@ -44,7 +44,7 @@ model Tweet {
 
   // Retweet : si ce tweet est un retweet, référence le tweet original
   retweetOfId String?
-  retweetOf   Tweet?  @relation("Retweet", fields: [retweetOfId], references: [id], onDelete: SetNull)
+  retweetOf   Tweet?  @relation("Retweet", fields: [retweetOfId], references: [id], onDelete: Cascade)
   retweets    Tweet[] @relation("Retweet")
 
   @@map("tweets")

@@ -32,7 +32,7 @@ function TendancesTab() {
   }
 
   function handleDeleted(id: string) {
-    setTweets((prev) => prev.filter((t) => t.id !== id));
+    setTweets((prev) => prev.filter((t) => t.id !== id && t.retweetOf?.id !== id));
   }
 
   function handleLikeChanged(id: string, isLiked: boolean, likes: number) {
@@ -44,7 +44,9 @@ function TendancesTab() {
   }
 
   function handleRetweeted(retweet: Tweet) {
-    setTweets((prev) => [retweet, ...prev]);
+    setTweets((prev) =>
+      prev.some((t) => t.id === retweet.id) ? prev : [retweet, ...prev]
+    );
   }
 
   return (
