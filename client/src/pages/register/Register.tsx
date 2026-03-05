@@ -4,7 +4,7 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { apiRegister, saveAuth } from "../../service/api";
 import { validateRegisterForm } from "../../utils/validation";
 import { toaster } from "../../utils/toaster";
-import FormField from "../../ui/form-field/FormField";
+import FormField from "../../ui/formField/FormField";
 import "./Style.css";
 
 function Register() {

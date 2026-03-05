@@ -3,7 +3,7 @@ import { VStack, Text } from "@chakra-ui/react";
 import { apiGetGlobalFeed, getStoredUser } from "../../service/api";
 import type { Tweet } from "../../service/api";
 import { toaster } from "../../utils/toaster";
-import TweetCard from "../../ui/tweet-card/TweetCard";
+import TweetCard from "../../ui/tweetCard/TweetCard";
 
 interface GlobalTabProps {
   newTweet: Tweet | null;

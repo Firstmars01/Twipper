@@ -8,7 +8,7 @@ import {
   getStoredUser,
 } from "../../service/api";
 import type { Tweet } from "../../service/api";
-import type { FollowUser } from "../../ui/follow-list-dialog/FollowListDialog";
+import type { FollowUser } from "../../ui/followListDialog/FollowListDialog";
 import { DIALOG_CONFIG, type UserProfile, type DialogKind } from "./Types";
 
 export function useProfile() {

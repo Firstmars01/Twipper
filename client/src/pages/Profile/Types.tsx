@@ -1,5 +1,5 @@
 import type { AuthResponse } from "../../service/api";
-import type { FollowUser } from "../../ui/follow-list-dialog/FollowListDialog";
+import type { FollowUser } from "../../ui/followListDialog/FollowListDialog";
 import { apiGetFollowers, apiGetFollowing } from "../../service/api";
 
 export type UserProfile = AuthResponse["user"] & {

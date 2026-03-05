@@ -1,8 +1,8 @@
 import { Box, Heading, Text, Spinner, Button, VStack } from "@chakra-ui/react";
 import Page404 from "../page404/Page404";
-import FollowListDialog from "../../ui/follow-list-dialog/FollowListDialog";
-import TweetCard from "../../ui/tweet-card/TweetCard";
-import ProfileEditForm from "../../ui/profile-edit-form/ProfileEditForm";
+import FollowListDialog from "../../ui/followListDialog/FollowListDialog";
+import TweetCard from "../../ui/tweetCard/TweetCard";
+import ProfileEditForm from "../../ui/profileEditForm/ProfileEditForm";
 import { useProfile } from "./Functions";
 import "./Style.css";
 
